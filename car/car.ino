@@ -56,6 +56,7 @@ int sensor() {
   int s3 = digitalRead(S3);
   return s1 | (s2 << 1) | (s3 << 2);
 }
+
 void ultra() {
   if (distance() > dist) {
     forward(velo);

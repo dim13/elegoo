@@ -103,7 +103,7 @@ void ir() {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(57600);
 
   pinMode(Echo, INPUT);
   pinMode(Trig, OUTPUT);

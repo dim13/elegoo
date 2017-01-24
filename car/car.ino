@@ -3,7 +3,7 @@
 
 #include <Servo.h>
 #include <IRremote.h>
-#include <os48.h>
+//#include <os48.h>
 #include "config.h"
 #include "ir.h"
 

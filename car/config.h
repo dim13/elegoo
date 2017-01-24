@@ -19,6 +19,9 @@
 #define S2  4
 #define S3 11
 
+// Servo
+#define SRV 3
+
 // Pinout IR
 #define IR 12
 

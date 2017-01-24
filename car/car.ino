@@ -125,7 +125,7 @@ void setup() {
   pinMode(IR, INPUT);
   irrecv.enableIRIn();
 
-  head.attach(3);
+  head.attach(SRV);
   lookahead();
   stop();
 }

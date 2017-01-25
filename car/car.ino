@@ -144,6 +144,7 @@ void loop() {
   int d = distance();
   if (d > 0) {
     evt.Distance = d;
+    evt.has_Distance = true;
     pb_encode_delimited(&output, Event_fields, &evt);
   }
 

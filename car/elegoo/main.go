@@ -10,25 +10,21 @@ import (
 )
 
 func Write(w io.Writer, buf []byte) {
-	w.Write([]byte{byte(len(buf))})
+	sz := proto.EncodeVarint(uint64(len(buf)))
+	w.Write(sz)
 	w.Write(buf)
 }
 
 func Read(r io.Reader) []byte {
-	buf := [32]byte{}
-	n, _ := r.Read(buf[:])
-	return buf[:n]
-	/*
-		sz := [1]byte{}
-		r.Read(sz[:])
-		log.Println(sz)
-		if l := int(sz[0]); l > 0 {
-			buf := make([]byte, l)
-			r.Read(buf)
-			return buf
-		}
-		return nil
-	*/
+	buf := [10]byte{}
+	r.Read(buf[:])
+	sz, n := proto.DecodeVarint(buf[:])
+
+	nbuf := make([]byte, int(sz))
+	copy(nbuf, buf[int(n):])
+
+	io.ReadFull(r, nbuf[int(10-n):])
+	return nbuf
 }
 
 func varint(b []byte) []byte {
@@ -70,7 +66,11 @@ func main() {
 
 	go func() {
 		for {
-			log.Printf("Got: %v", Read(s))
+			buf := Read(s)
+			log.Printf("Got: %v", buf)
+			evt := &Event{}
+			proto.Unmarshal(buf, evt)
+			log.Println(evt)
 		}
 	}()
 

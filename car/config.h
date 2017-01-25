@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#define LED  13
+
 // Settings
 #define dist  20
 #define velo 130

@@ -6,6 +6,8 @@
 //#include <os48.h>
 #include "config.h"
 #include "ir.h"
+#include "common.h"
+#include "elegoo.pb.h"
 
 Servo head;
 IRrecv irrecv(IR);
@@ -117,6 +119,7 @@ void setup() {
 
   pinMode(ENA, OUTPUT);
   pinMode(ENB, OUTPUT);
+  pinMode(LED, OUTPUT);
 
   pinMode(S1, INPUT);
   pinMode(S2, INPUT);
@@ -131,7 +134,21 @@ void setup() {
 }
 
 void loop() {
+  pb_istream_t input  = pb_istream_from_serial();
+  Command cmd = {};
+  //if (Serial.available())
+    pb_decode_delimited(&input, Command_fields, &cmd);
+
+  pb_ostream_t output = pb_ostream_from_serial();
+  Event evt = {};
+  int d = distance();
+  if (d > 0) {
+    evt.Distance = d;
+    pb_encode_delimited(&output, Event_fields, &evt);
+  }
+
+  delay(1000);
   //ultra();
-  ir();
+  //ir();
 }
 

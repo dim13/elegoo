@@ -21,9 +21,12 @@ func Read(r io.Reader) []byte {
 	sz, n := proto.DecodeVarint(buf[:])
 
 	nbuf := make([]byte, int(sz))
+
 	copy(nbuf, buf[int(n):])
 
-	io.ReadFull(r, nbuf[int(10-n):])
+	if int(sz) > int(10-n) {
+		io.ReadFull(r, nbuf[int(10-n):])
+	}
 	return nbuf
 }
 
@@ -33,11 +36,6 @@ func varint(b []byte) []byte {
 
 // /dev/cu.Elegoo-DevB
 // /dev/cu.usbmodem1421
-
-func Wait(d time.Duration) {
-	log.Println("Wait", d)
-	time.Sleep(d)
-}
 
 func main() {
 	c := &serial.Config{
@@ -50,7 +48,6 @@ func main() {
 	}
 	defer s.Close()
 
-	Wait(3 * time.Second)
 	cmd := &Command{
 		SetSpeed: &Speed{
 			Left:  100,

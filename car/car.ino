@@ -136,7 +136,7 @@ void setup() {
 void loop() {
   pb_istream_t input  = pb_istream_from_serial();
   Command cmd = {};
-  //if (Serial.available())
+  if (Serial.available())
     pb_decode_delimited(&input, Command_fields, &cmd);
 
   pb_ostream_t output = pb_ostream_from_serial();

@@ -2,7 +2,7 @@
 // 01.01.2017
 
 #include <Servo.h>
-#include <IRremote.h>
+//#include <IRremote.h>
 //#include <os48.h>
 #include "config.h"
 #include "ir.h"
@@ -10,7 +10,7 @@
 #include "elegoo.pb.h"
 
 Servo head;
-IRrecv irrecv(IR);
+//IRrecv irrecv(IR);
 
 void motor(int e, int a, int b, int v) {
   if (v > 0) {
@@ -81,6 +81,7 @@ void ultra() {
   }
 }
 
+/* FIXME broken package
 void ir() {
   decode_results results;
   if (irrecv.decode(&results)) {
@@ -105,6 +106,7 @@ void ir() {
     delay(150);
   }
 }
+*/
 
 void setup() {
   Serial.begin(57600);
@@ -126,7 +128,7 @@ void setup() {
   pinMode(S3, INPUT);
 
   pinMode(IR, INPUT);
-  irrecv.enableIRIn();
+//  irrecv.enableIRIn();
 
   head.attach(SRV);
   lookahead();

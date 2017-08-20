@@ -15,7 +15,7 @@ TARGET=template
 AMFORTH=../..
 
 # the MCU should be identical to the device
-MCU=atmega1284p
+MCU=atmega328p
 # set the fuses according to your MCU
 LFUSE=0xnn
 HFUSE=0xnn
@@ -36,7 +36,8 @@ BURNER=$(USB)
 AVRDUDE=avrdude
 AVRDUDE_FLAGS=-q $(BURNER) -p $(MCU)
 
-AVRASM=wine $(DIR_ATMEL)/avrasm2.exe -I $(DIR_ATMEL)/Appnotes2
+#AVRASM=wine $(DIR_ATMEL)/avrasm2.exe -I $(DIR_ATMEL)/Appnotes2
+AVRASM=avra -I $(DIR_ATMEL)/Appnotes2
 
 # ----------------------------------------------------------
 
@@ -55,7 +56,7 @@ $(TARGET).hex: $(TARGET).asm words/*.asm $(AMFORTH)/common/words/*.asm $(AMFORTH
          TSTAMPLEN=$${#TSTAMP}; \
          echo "($$TSTAMPLEN) $$TSTAMP"; \
          sed -e "s/@TSTAMPLEN@/$$TSTAMPLEN/g" -e "s/@TSTAMP@/$$TSTAMP/g" $(AMFORTH)/common/words/build-info.tmpl > words/build-info.asm )
-	$(AVRASM) $(INCLUDE) -fI -v0 -e $(TARGET).eep.hex -l $(TARGET).lst $(TARGET).asm
+	$(AVRASM) $(INCLUDE) -fI -e $(TARGET).eep.hex -l $(TARGET).lst $(TARGET).asm
 
 $(TARGET).back:
 	$(AVRDUDE) $(AVRDUDE_FLAGS)  -U flash:r:$(TARGET).hex:i -U eeprom:r:$(TARGET).eep.hex:i

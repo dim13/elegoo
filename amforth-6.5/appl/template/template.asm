@@ -35,7 +35,7 @@
 ; amforth needs two essential parameters: CPU clock
 ; and command terminal line.
 ; cpu clock in hertz, 1MHz is factory default
-.equ F_CPU = 8000000
+.equ F_CPU = 20000000
 
 ; terminal settings
 ; check http://amforth.sourceforge.net/TG/recipes/Usart.html

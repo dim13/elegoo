@@ -42,6 +42,7 @@ static bool checkreturn pb_dec_fixed64(pb_istream_t *stream, const pb_field_t *f
 static bool checkreturn pb_dec_bytes(pb_istream_t *stream, const pb_field_t *field, void *dest);
 static bool checkreturn pb_dec_string(pb_istream_t *stream, const pb_field_t *field, void *dest);
 static bool checkreturn pb_dec_submessage(pb_istream_t *stream, const pb_field_t *field, void *dest);
+static bool checkreturn pb_dec_fixed_length_bytes(pb_istream_t *stream, const pb_field_t *field, void *dest);
 static bool checkreturn pb_skip_varint(pb_istream_t *stream);
 static bool checkreturn pb_skip_string(pb_istream_t *stream);
 
@@ -65,7 +66,7 @@ static const pb_decoder_t PB_DECODERS[PB_LTYPES_COUNT] = {
     &pb_dec_string,
     &pb_dec_submessage,
     NULL, /* extensions */
-    &pb_dec_bytes /* PB_LTYPE_FIXED_LENGTH_BYTES */
+    &pb_dec_fixed_length_bytes
 };
 
 /*******************************
@@ -477,6 +478,9 @@ static void initialize_pointer_field(void *pItem, pb_field_iter_t *iter)
     }
     else if (PB_LTYPE(iter->pos->type) == PB_LTYPE_SUBMESSAGE)
     {
+        /* We memset to zero so that any callbacks are set to NULL.
+         * Then set any default values. */
+        memset(pItem, 0, iter->pos->data_size);
         pb_message_set_to_defaults((const pb_field_t *) iter->pos->ptr, pItem);
     }
 }
@@ -615,7 +619,7 @@ static bool checkreturn decode_callback_field(pb_istream_t *stream, pb_wire_type
     void **arg = &(pCallback->arg);
 #endif
     
-    if (pCallback->funcs.decode == NULL)
+    if (pCallback == NULL || pCallback->funcs.decode == NULL)
         return pb_skip_field(stream, wire_type);
     
     if (wire_type == PB_WT_STRING)
@@ -779,7 +783,7 @@ static void pb_field_set_to_default(pb_field_iter_t *iter)
     else if (PB_ATYPE(type) == PB_ATYPE_STATIC)
     {
         bool init_data = true;
-        if (PB_HTYPE(type) == PB_HTYPE_OPTIONAL)
+        if (PB_HTYPE(type) == PB_HTYPE_OPTIONAL && iter->pSize != iter->pData)
         {
             /* Set has_field to false. Still initialize the optional field
              * itself also. */
@@ -933,6 +937,9 @@ bool checkreturn pb_decode_noinit(pb_istream_t *stream, const pb_field_t fields[
         if (PB_HTYPE(last_type) == PB_HTYPE_REQUIRED && iter.pos->tag != 0)
             req_field_count++;
         
+        if (req_field_count > PB_MAX_REQUIRED_FIELDS)
+            req_field_count = PB_MAX_REQUIRED_FIELDS;
+
         if (req_field_count > 0)
         {
             /* Check the whole words */
@@ -942,9 +949,15 @@ bool checkreturn pb_decode_noinit(pb_istream_t *stream, const pb_field_t fields[
                     PB_RETURN_ERROR(stream, "missing required field");
             }
             
-            /* Check the remaining bits */
-            if (fields_seen[req_field_count >> 5] != (allbits >> (32 - (req_field_count & 31))))
-                PB_RETURN_ERROR(stream, "missing required field");
+            /* Check the remaining bits (if any) */
+            if ((req_field_count & 31) != 0)
+            {
+                if (fields_seen[req_field_count >> 5] !=
+                    (allbits >> (32 - (req_field_count & 31))))
+                {
+                    PB_RETURN_ERROR(stream, "missing required field");
+                }
+            }
         }
     }
     
@@ -1286,12 +1299,6 @@ static bool checkreturn pb_dec_bytes(pb_istream_t *stream, const pb_field_t *fie
     }
     else
     {
-        if (PB_LTYPE(field->type) == PB_LTYPE_FIXED_LENGTH_BYTES) {
-            if (size != field->data_size)
-                PB_RETURN_ERROR(stream, "incorrect inline bytes size");
-            return pb_read(stream, (pb_byte_t*)dest, field->data_size);
-        }
-
         if (alloc_size > field->data_size)
             PB_RETURN_ERROR(stream, "bytes overflow");
         bdest = (pb_bytes_array_t*)dest;
@@ -1358,4 +1365,27 @@ static bool checkreturn pb_dec_submessage(pb_istream_t *stream, const pb_field_t
     if (!pb_close_string_substream(stream, &substream))
         return false;
     return status;
+}
+
+static bool checkreturn pb_dec_fixed_length_bytes(pb_istream_t *stream, const pb_field_t *field, void *dest)
+{
+    uint32_t size;
+
+    if (!pb_decode_varint32(stream, &size))
+        return false;
+
+    if (size > PB_SIZE_MAX)
+        PB_RETURN_ERROR(stream, "bytes overflow");
+
+    if (size == 0)
+    {
+        /* As a special case, treat empty bytes string as all zeros for fixed_length_bytes. */
+        memset(dest, 0, field->data_size);
+        return true;
+    }
+
+    if (size != field->data_size)
+        PB_RETURN_ERROR(stream, "incorrect fixed length bytes size");
+
+    return pb_read(stream, (pb_byte_t*)dest, field->data_size);
 }

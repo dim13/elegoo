@@ -8,13 +8,10 @@ bool
 os_read(pb_istream_t *stream, uint8_t *buf, size_t count)
 {
 	Stream *s = static_cast<Stream *>(stream->state);
-	while (count > 0) {
-		if (s->available() > 0) {
-			size_t readCount = s->readBytes((char *)buf, count);
-			count -= readCount;
-		}
+	while (s->available() > 0 && count > 0) {
+		count -= s->readBytes((char *)buf, count);
 	}
-	return true;
+	return count == 0;
 }
 
 

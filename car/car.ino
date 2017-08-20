@@ -59,56 +59,13 @@ void look(int deg) {
 #define lookleft(deg)   do look( deg); while (0)
 #define lookright(deg)  do look(-deg); while (0)
 
-int sensor() {
-  int s1 = digitalRead(S1);
-  int s2 = digitalRead(S2);
-  int s3 = digitalRead(S3);
-  return s1 | (s2 << 1) | (s3 << 2);
-}
 
-void ultra() {
-  if (distance() > dist) {
-    forward(velo);
-    return;
-  }
-  stop();
-  lookleft(60);
-  if (distance() > dist) {
-    toleft(velo);
-    lookahead();
-    return;
-  }
-  lookright(60);
-  if (distance() > dist) {
-    toright(velo);
-    lookahead();
-    return;
-  }
-}
-
-void ir() {
-  decode_results results;
+int ir() {
+  decode_results results = {};
   if (irrecv.decode(&results)) {
-    switch (results.value) {
-      case KeyUp:
-        forward(velo);
-        break;
-      case KeyDown:
-        backward(velo);
-        break;
-      case KeyLeft:
-        toleft(velo);
-        break;
-      case KeyRight:
-        toright(velo);
-        break;
-      case KeyOk:
-        stop();
-        break;
-    }
     irrecv.resume();
-    delay(150);
   }
+  return results.value;
 }
 
 void setup() {
@@ -158,9 +115,10 @@ void loop() {
   evt.SensorC = digitalRead(S3);
   evt.has_SensorC = true;
 
+  evt.KeyPress = ir();
+  evt.has_KeyPress = evt.KeyPress != 0;
+
   pb_encode_delimited(&ostream, Event_fields, &evt);
 
   delay(1000);
-  //ultra();
-  ir();
 }

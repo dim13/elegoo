@@ -13,4 +13,5 @@ message Event {
 	bool SensorA = 2;
 	bool SensorB = 3;
 	bool SensorC = 4;
+	uint32 KeyPress = 5;
 }

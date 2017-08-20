@@ -1,7 +1,7 @@
 package main
 
-//go:generate sh -c "protoc -I.. --go_out=. ../*.proto"
-//go:generate sh -c "protoc -I.. --nanopb_out=.. ../*.proto"
+//go:generate sh -c "protoc --go_out=. *.proto"
+//go:generate sh -c "protoc --nanopb_out=.. *.proto"
 
 import (
 	"io"
@@ -18,17 +18,11 @@ func Write(w io.Writer, buf []byte) {
 }
 
 func Read(r io.Reader) []byte {
-	buf := make([]byte, 80)
-	n, _ := r.Read(buf)
-	sz, n := proto.DecodeVarint(buf[:n])
-
+	buf := make([]byte, 1)
+	r.Read(buf)
+	sz, _ := proto.DecodeVarint(buf)
 	nbuf := make([]byte, int(sz))
-
-	copy(nbuf, buf[int(n):])
-
-	if int(sz) > int(80-n) {
-		io.ReadFull(r, nbuf[int(80-n):])
-	}
+	io.ReadFull(r, nbuf)
 	return nbuf
 }
 

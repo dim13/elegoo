@@ -3,13 +3,9 @@ syntax = "proto3";
 option go_package = "main";
 
 message Command {
-	Speed SetSpeed = 1;
-	bool Stop      = 2;
-}
-
-message Speed {
-	int32 Left  = 1;
-	int32 Right = 2;
+	int32 LeftSpeed = 1;
+	int32 RightSpeed = 2;
+	int32 TurnHead = 3;
 }
 
 message Event {

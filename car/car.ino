@@ -141,16 +141,24 @@ void setup() {
 }
 
 void loop() {
-  //Command cmd = Cmd_init_zero;
-  //pb_decode_delimited(&istream, Command_fields, &cmd);
+  Command cmd = Command_init_zero;
+  pb_decode_delimited(&istream, Command_fields, &cmd);
 
   Event evt = Event_init_zero;
-  int d = distance();
-  if (d > 0) {
-    evt.Distance = d;
-    evt.has_Distance = true;
-    pb_encode_delimited(&ostream, Event_fields, &evt);
-  }
+
+  evt.Distance = distance();
+  evt.has_Distance = evt.Distance > 0;
+
+  evt.SensorA = digitalRead(S1);
+  evt.has_SensorA = true;
+
+  evt.SensorB = digitalRead(S2);
+  evt.has_SensorB = true;
+
+  evt.SensorC = digitalRead(S3);
+  evt.has_SensorC = true;
+
+  pb_encode_delimited(&ostream, Event_fields, &evt);
 
   delay(1000);
   //ultra();

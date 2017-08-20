@@ -6,16 +6,15 @@
 #include <IRremote.h>
 //#include <os48.h>
 
-#include "config.h"
-#include "pb_stream.h"
+#include <pb_encode.h>
+#include <pb_decode.h>
+
 #include "elegoo.pb.h"
+#include "config.h"
 
 PacketSerial serial;
 Servo servo;
 IRrecv irrecv(IR);
-
-pb_istream_t istream;
-pb_ostream_t ostream;
 
 void motor(int e, int a, int b, int v) {
   if (v > 0) {

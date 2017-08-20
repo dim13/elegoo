@@ -11,7 +11,7 @@
 #include "elegoo.pb.h"
 
 PacketSerial serial;
-Servo head;
+Servo servo;
 IRrecv irrecv(IR);
 
 pb_istream_t istream;
@@ -51,7 +51,7 @@ int distance() {
 }
 
 void look(int deg) {
-  head.write(90 + deg);
+  servo.write(90 + deg);
 }
 
 #define lookahead()     do look(   0); while (0)
@@ -129,5 +129,5 @@ void setup() {
   pinMode(IR, INPUT);
   irrecv.enableIRIn();
 
-  head.attach(SRV);
+  servo.attach(SRV);
 }

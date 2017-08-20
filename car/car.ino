@@ -52,13 +52,11 @@ int distance() {
 
 void look(int deg) {
   head.write(90 + deg);
-  delay(1000); // wait to finish
 }
 
 #define lookahead()     do look(   0); while (0)
 #define lookleft(deg)   do look( deg); while (0)
 #define lookright(deg)  do look(-deg); while (0)
-
 
 int ir() {
   decode_results results = {};

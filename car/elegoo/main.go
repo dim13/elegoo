@@ -11,14 +11,13 @@ import (
 
 func Write(w io.Writer, buf []byte) {
 	sz := proto.EncodeVarint(uint64(len(buf)))
-	w.Write(sz)
-	w.Write(buf)
+	w.Write(append(sz, buf...))
 }
 
 func Read(r io.Reader) []byte {
-	buf := [10]byte{}
-	r.Read(buf[:])
-	sz, n := proto.DecodeVarint(buf[:])
+	buf := make([]byte, 80)
+	n, _ := r.Read(buf)
+	sz, n := proto.DecodeVarint(buf[:n])
 
 	nbuf := make([]byte, int(sz))
 
@@ -58,13 +57,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Send: %v", buf)
-	Write(s, buf)
+	log.Printf("Send: %x", buf)
+	//Write(s, buf)
 
 	go func() {
 		for {
 			buf := Read(s)
-			log.Printf("Got: %v", buf)
+			log.Printf("Got: %x", buf)
 			evt := &Event{}
 			proto.Unmarshal(buf, evt)
 			log.Println(evt)

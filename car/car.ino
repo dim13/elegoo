@@ -1,16 +1,22 @@
 // Dimitri Sokolyuk
 // 01.01.2017
 
+//#include <PacketSerial.h>
 #include <Servo.h>
-//#include <IRremote.h>
+#include <IRremote.h>
 //#include <os48.h>
 #include "config.h"
 #include "ir.h"
-#include "common.h"
+
+#include "pb_stream.h"
 #include "elegoo.pb.h"
 
+//PacketSerial serial;
 Servo head;
-//IRrecv irrecv(IR);
+IRrecv irrecv(IR);
+
+pb_istream_t istream;
+pb_ostream_t ostream;
 
 void motor(int e, int a, int b, int v) {
   if (v > 0) {
@@ -81,7 +87,6 @@ void ultra() {
   }
 }
 
-/* FIXME broken package
 void ir() {
   decode_results results;
   if (irrecv.decode(&results)) {
@@ -106,10 +111,11 @@ void ir() {
     delay(150);
   }
 }
-*/
 
 void setup() {
   Serial.begin(57600);
+  pb_istream_from_stream(Serial, istream);
+  pb_ostream_from_stream(Serial, ostream);
 
   pinMode(Echo, INPUT);
   pinMode(Trig, OUTPUT);
@@ -128,7 +134,7 @@ void setup() {
   pinMode(S3, INPUT);
 
   pinMode(IR, INPUT);
-//  irrecv.enableIRIn();
+  irrecv.enableIRIn();
 
   head.attach(SRV);
   lookahead();
@@ -136,22 +142,18 @@ void setup() {
 }
 
 void loop() {
-  pb_istream_t input  = pb_istream_from_serial();
-  Command cmd = {};
-  if (Serial.available())
-    pb_decode_delimited(&input, Command_fields, &cmd);
+  //Command cmd;
+  //pb_decode_delimited(&istream, Command_fields, &cmd);
 
-  pb_ostream_t output = pb_ostream_from_serial();
   Event evt = {};
   int d = distance();
   if (d > 0) {
     evt.Distance = d;
     evt.has_Distance = true;
-    pb_encode_delimited(&output, Event_fields, &evt);
+    pb_encode_delimited(&ostream, Event_fields, &evt);
   }
 
   delay(1000);
   //ultra();
-  //ir();
+  ir();
 }
-

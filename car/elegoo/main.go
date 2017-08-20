@@ -26,8 +26,8 @@ func Read(r io.Reader) []byte {
 
 	copy(nbuf, buf[int(n):])
 
-	if int(sz) > int(10-n) {
-		io.ReadFull(r, nbuf[int(10-n):])
+	if int(sz) > int(80-n) {
+		io.ReadFull(r, nbuf[int(80-n):])
 	}
 	return nbuf
 }

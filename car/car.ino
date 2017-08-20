@@ -141,10 +141,10 @@ void setup() {
 }
 
 void loop() {
-  //Command cmd;
+  //Command cmd = Cmd_init_zero;
   //pb_decode_delimited(&istream, Command_fields, &cmd);
 
-  Event evt = {};
+  Event evt = Event_init_zero;
   int d = distance();
   if (d > 0) {
     evt.Distance = d;

@@ -18,6 +18,7 @@ func Write(w io.Writer, pb proto.Message) error {
 	if err != nil {
 		return err
 	}
+	log.Println("write: % x", buf.Bytes()) // DEBUG
 	_, err = w.Write(buf.Bytes())
 	return err
 }
@@ -28,7 +29,7 @@ func Read(r io.Reader, pb proto.Message) error {
 	if err != nil {
 		return err
 	}
-	log.Prinltn("got: % x", buf[:n]) // DEBUG
+	log.Println("read: % x", buf[:n]) // DEBUG
 	return proto.NewBuffer(buf[:n]).DecodeMessage(pb)
 }
 
@@ -46,8 +47,8 @@ func main() {
 	}
 	defer s.Close()
 
-	cmd := &Command{}
-	Write(s, cmd)
+	//cmd := &Command{}
+	//Write(s, cmd)
 
 	go func() {
 		for {

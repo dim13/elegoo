@@ -1,5 +1,8 @@
 package main
 
+//go:generate sh -c "protoc -I.. --go_out=. ../*.proto"
+//go:generate sh -c "protoc -I.. --nanopb_out=.. ../*.proto"
+
 import (
 	"io"
 	"log"
@@ -70,5 +73,5 @@ func main() {
 		}
 	}()
 
-	time.Sleep(30 * time.Second)
+	time.Sleep(time.Minute)
 }

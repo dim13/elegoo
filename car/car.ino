@@ -68,8 +68,15 @@ int ir() {
 void onPacket(const uint8_t* buf, size_t size) {
   Command cmd = Command_init_zero;
 
-  pb_istream_t istream = pb_istream_from_buffer(buf, sizeof(buf));
+  pb_istream_t istream = pb_istream_from_buffer(buf, size);
   pb_decode_delimited(&istream, Command_fields, &cmd);
+
+  if (cmd.has_TurnHead) {
+    servo.write(90 + cmd.TurnHead);
+  }
+  if (cmd.has_Center) {
+    servo.write(90);
+  }
 }
 
 void env() {
@@ -80,14 +87,14 @@ void env() {
   evt.Distance = distance();
   evt.has_Distance = evt.Distance > 0;
 
-  evt.SensorA = digitalRead(S1);
-  evt.has_SensorA = true;
+  evt.SensorR = !digitalRead(SR);
+  evt.has_SensorR = true;
 
-  evt.SensorB = digitalRead(S2);
-  evt.has_SensorB = true;
-
-  evt.SensorC = digitalRead(S3);
+  evt.SensorC = !digitalRead(SC);
   evt.has_SensorC = true;
+
+  evt.SensorL = !digitalRead(SL);
+  evt.has_SensorL = true;
 
   evt.KeyPress = ir();
   evt.has_KeyPress = evt.KeyPress != 0;
@@ -101,6 +108,7 @@ void env() {
 void loop() {
   env();
   serial.update();
+  delay(200);
 }
 
 void setup() {
@@ -121,9 +129,9 @@ void setup() {
   pinMode(ENB, OUTPUT);
   pinMode(LED, OUTPUT);
 
-  pinMode(S1, INPUT);
-  pinMode(S2, INPUT);
-  pinMode(S3, INPUT);
+  pinMode(SR, INPUT);
+  pinMode(SC, INPUT);
+  pinMode(SL, INPUT);
 
   pinMode(IR, INPUT);
   irrecv.enableIRIn();

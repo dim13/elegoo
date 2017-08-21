@@ -5,13 +5,14 @@ option go_package = "main";
 message Command {
 	int32 LeftSpeed = 1;
 	int32 RightSpeed = 2;
-	int32 TurnHead = 3;
+	sint32 TurnHead = 3; // ±90 deg
+	bool Center = 4;
 }
 
 message Event {
 	int32 Distance = 1;
-	bool SensorA = 2;
-	bool SensorB = 3;
-	bool SensorC = 4;
+	bool SensorR = 2;
+	bool SensorC = 3;
+	bool SensorL = 4;
 	uint32 KeyPress = 5;
 }

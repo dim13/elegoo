@@ -4,10 +4,12 @@ package main
 //go:generate sh -c "protoc --nanopb_out=.. *.proto"
 
 import (
+	"bufio"
 	"io"
 	"log"
 	"time"
 
+	"github.com/dim13/cobs"
 	"github.com/golang/protobuf/proto"
 	"github.com/tarm/serial"
 )
@@ -18,19 +20,19 @@ func Write(w io.Writer, pb proto.Message) error {
 	if err != nil {
 		return err
 	}
-	log.Println("write: % x", buf.Bytes()) // DEBUG
-	_, err = w.Write(buf.Bytes())
+	log.Printf("write: % x", buf.Bytes()) // DEBUG
+	block := cobs.Encode(buf.Bytes())
+	_, err = w.Write(block)
 	return err
 }
 
-func Read(r io.Reader, pb proto.Message) error {
-	buf := make([]byte, 80)
-	n, err := r.Read(buf)
+func Read(buf *bufio.Reader, pb proto.Message) error {
+	block, err := buf.ReadBytes(0)
 	if err != nil {
 		return err
 	}
-	log.Println("read: % x", buf[:n]) // DEBUG
-	return proto.NewBuffer(buf[:n]).DecodeMessage(pb)
+	block = cobs.Decode(block)
+	return proto.NewBuffer(block).DecodeMessage(pb)
 }
 
 // /dev/cu.Elegoo-DevB
@@ -38,7 +40,7 @@ func Read(r io.Reader, pb proto.Message) error {
 
 func main() {
 	c := &serial.Config{
-		Name: "/dev/cu.usbmodem1421",
+		Name: "/dev/tty.usbmodem1411",
 		Baud: 57600,
 	}
 	s, err := serial.OpenPort(c)
@@ -47,16 +49,24 @@ func main() {
 	}
 	defer s.Close()
 
-	//cmd := &Command{}
-	//Write(s, cmd)
-
 	go func() {
-		for {
-			evt := &Event{}
-			Read(s, evt)
-			log.Println(evt)
+		cmd := &Command{}
+		for i := -45; i < 45; i += 5 {
+			cmd.TurnHead = int32(i)
+			Write(s, cmd)
+			time.Sleep(time.Second / 2)
 		}
+		cmd.TurnHead = 0
+		cmd.Center = true
+		Write(s, cmd)
 	}()
 
-	time.Sleep(time.Minute)
+	buf := bufio.NewReader(s)
+	for {
+		evt := &Event{}
+		if err := Read(buf, evt); err != nil {
+			log.Println("ERR", err)
+		}
+		log.Println(evt)
+	}
 }

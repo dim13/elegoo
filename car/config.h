@@ -17,9 +17,9 @@
 #define IN4 10 // 6
 
 // Pinout sensors
-#define S1  2
-#define S2  4
-#define S3 11
+#define SR  2 // right
+#define SC  4 // center
+#define SL 11 // left
 
 // Servo
 #define SRV 3

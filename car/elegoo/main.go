@@ -1,7 +1,6 @@
 package main
 
-//go:generate sh -c "protoc --go_out=. *.proto"
-//go:generate sh -c "protoc --nanopb_out=.. *.proto"
+//go:generate sh -c "protoc --go_out=. --nanopb_out=.. *.proto"
 
 import (
 	"bufio"

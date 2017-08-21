@@ -6,8 +6,9 @@ message Command {
 	sint32 SpeedR = 1;
 	sint32 SpeedL = 2;
 	bool Stop = 3;
-	sint32 TurnHead = 4; // ±90 deg
-	bool Center = 5;
+	bool Center = 4;
+	sint32 TurnHead = 5; // ±90 deg
+	sint32 Trim = 6;
 }
 
 message Event {

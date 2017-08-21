@@ -14,6 +14,7 @@
 
 PacketSerial serial;
 Servo servo;
+int trim;
 
 IRrecv irrecv(IR);
 decode_results ir;
@@ -39,17 +40,6 @@ void motorL(int v) {
   motor(ENB, IN3, IN4, v);
 }
 
-void move(int l, int r) {
-  motor(ENA, IN1, IN2, l);
-  motor(ENB, IN3, IN4, r);
-}
-
-#define forward(v)  do move( v,  v); while (0)
-#define backward(v) do move(-v, -v); while (0)
-#define toleft(v)   do move( v, -v); while (0)
-#define toright(v)  do move(-v,  v); while (0)
-#define stop()      do move( 0,  0); while (0)
-
 int distance() {
   digitalWrite(Trig, LOW);
   delayMicroseconds(2);
@@ -59,13 +49,11 @@ int distance() {
   return pulseIn(Echo, HIGH, TimeOut) / ToCM;
 }
 
+// + left
+// - right
 void look(int deg) {
-  servo.write(90 + deg);
+  servo.write(90 + deg + trim);
 }
-
-#define lookahead()     do look(   0); while (0)
-#define lookleft(deg)   do look( deg); while (0)
-#define lookright(deg)  do look(-deg); while (0)
 
 void onPacket(const uint8_t* buf, size_t size) {
   Command cmd = Command_init_zero;
@@ -79,16 +67,20 @@ void onPacket(const uint8_t* buf, size_t size) {
   if (cmd.has_SpeedL) {
     motorL(cmd.SpeedL);
   }
-  if (cmd.has_Stop && cmd.Stop) {
+  if (cmd.has_Stop) {
     motorR(0);
     motorL(0);
   }
+  if (cmd.has_Trim) {
+    trim = cmd.Trim;
+  }
   if (cmd.has_TurnHead) {
-    servo.write(90 + cmd.TurnHead);
+    look(cmd.TurnHead);
   }
   if (cmd.has_Center) {
-    servo.write(90);
+    look(0);
   }
+
 }
 
 void env() {

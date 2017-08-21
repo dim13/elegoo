@@ -7,7 +7,6 @@ import (
 	"bufio"
 	"io"
 	"log"
-	"time"
 
 	"github.com/dim13/cobs"
 	"github.com/golang/protobuf/proto"
@@ -51,12 +50,7 @@ func main() {
 
 	go func() {
 		cmd := &Command{}
-		for i := -45; i < 45; i += 5 {
-			cmd.TurnHead = int32(i)
-			Write(s, cmd)
-			time.Sleep(time.Second / 2)
-		}
-		cmd.TurnHead = 0
+		cmd.Trim = -10
 		cmd.Center = true
 		Write(s, cmd)
 

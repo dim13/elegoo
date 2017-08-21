@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"io"
 	"log"
+	"time"
 
 	"github.com/dim13/cobs"
 	"github.com/golang/protobuf/proto"
@@ -49,37 +50,41 @@ func main() {
 	defer s.Close()
 
 	go func() {
-		cmd := &Command{}
-		cmd.Trim = -10
-		cmd.Center = true
-		Write(s, cmd)
+		time.Sleep(5 * time.Second)
 
-		/* MOTOR
-		cmd.SpeedL = 200
-		cmd.SpeedR = 0
-		cmd.Stop = false
-		Write(s, cmd)
-		time.Sleep(3 * time.Second)
+		Write(s, &Command{Direction: -45})
+		time.Sleep(time.Second)
 
-		cmd.SpeedL = 0
-		cmd.SpeedR = 0
-		cmd.Stop = true
-		Write(s, cmd)
-		time.Sleep(3 * time.Second)
+		Write(s, &Command{Direction: 45})
+		time.Sleep(time.Second)
 
-		cmd.SpeedL = 0
-		cmd.SpeedR = 200
-		cmd.Stop = false
-		Write(s, cmd)
-		time.Sleep(3 * time.Second)
-
-		cmd.SpeedL = 0
-		cmd.SpeedR = 0
-		cmd.Stop = true
-		Write(s, cmd)
-		*/
-
+		Write(s, &Command{Center: true})
 	}()
+
+	/* MOTOR
+	cmd.SpeedL = 200
+	cmd.SpeedR = 0
+	cmd.Stop = false
+	Write(s, cmd)
+	time.Sleep(3 * time.Second)
+
+	cmd.SpeedL = 0
+	cmd.SpeedR = 0
+	cmd.Stop = true
+	Write(s, cmd)
+	time.Sleep(3 * time.Second)
+
+	cmd.SpeedL = 0
+	cmd.SpeedR = 200
+	cmd.Stop = false
+	Write(s, cmd)
+	time.Sleep(3 * time.Second)
+
+	cmd.SpeedL = 0
+	cmd.SpeedR = 0
+	cmd.Stop = true
+	Write(s, cmd)
+	*/
 
 	buf := bufio.NewReader(s)
 	for {

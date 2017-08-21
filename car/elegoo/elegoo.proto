@@ -7,14 +7,14 @@ message Command {
 	sint32 SpeedL = 2;
 	bool Stop = 3;
 	bool Center = 4;
-	sint32 TurnHead = 5; // ±90 deg
-	sint32 Trim = 6;
+	sint32 Direction = 5; // +90 left; -90 right
 }
 
 message Event {
 	uint32 Distance = 1;
-	bool SensorR = 2;
-	bool SensorC = 3;
-	bool SensorL = 4;
-	uint32 KeyPress = 5;
+	sint32 Direction = 2;
+	bool SensorR = 3;
+	bool SensorC = 4;
+	bool SensorL = 5;
+	uint32 KeyPress = 6;
 }

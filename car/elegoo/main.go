@@ -20,7 +20,6 @@ func Write(w io.Writer, pb proto.Message) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("write: % x", buf.Bytes()) // DEBUG
 	block := cobs.Encode(buf.Bytes())
 	_, err = w.Write(block)
 	return err
@@ -37,10 +36,11 @@ func Read(buf *bufio.Reader, pb proto.Message) error {
 
 // /dev/cu.Elegoo-DevB
 // /dev/cu.usbmodem1421
+// /dev/cu.usbmodem1411
 
 func main() {
 	c := &serial.Config{
-		Name: "/dev/tty.usbmodem1411",
+		Name: "/dev/tty.usbmodem1421",
 		Baud: 57600,
 	}
 	s, err := serial.OpenPort(c)
@@ -59,6 +59,32 @@ func main() {
 		cmd.TurnHead = 0
 		cmd.Center = true
 		Write(s, cmd)
+
+		/* MOTOR
+		cmd.SpeedL = 200
+		cmd.SpeedR = 0
+		cmd.Stop = false
+		Write(s, cmd)
+		time.Sleep(3 * time.Second)
+
+		cmd.SpeedL = 0
+		cmd.SpeedR = 0
+		cmd.Stop = true
+		Write(s, cmd)
+		time.Sleep(3 * time.Second)
+
+		cmd.SpeedL = 0
+		cmd.SpeedR = 200
+		cmd.Stop = false
+		Write(s, cmd)
+		time.Sleep(3 * time.Second)
+
+		cmd.SpeedL = 0
+		cmd.SpeedR = 0
+		cmd.Stop = true
+		Write(s, cmd)
+		*/
+
 	}()
 
 	buf := bufio.NewReader(s)

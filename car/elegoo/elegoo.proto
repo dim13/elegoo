@@ -3,14 +3,15 @@ syntax = "proto3";
 option go_package = "main";
 
 message Command {
-	int32 LeftSpeed = 1;
-	int32 RightSpeed = 2;
-	sint32 TurnHead = 3; // ±90 deg
-	bool Center = 4;
+	sint32 SpeedR = 1;
+	sint32 SpeedL = 2;
+	bool Stop = 3;
+	sint32 TurnHead = 4; // ±90 deg
+	bool Center = 5;
 }
 
 message Event {
-	int32 Distance = 1;
+	uint32 Distance = 1;
 	bool SensorR = 2;
 	bool SensorC = 3;
 	bool SensorL = 4;

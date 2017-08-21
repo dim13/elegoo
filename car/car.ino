@@ -14,7 +14,9 @@
 
 PacketSerial serial;
 Servo servo;
+
 IRrecv irrecv(IR);
+decode_results ir;
 
 void motor(int e, int a, int b, int v) {
   if (v > 0) {
@@ -27,6 +29,14 @@ void motor(int e, int a, int b, int v) {
     v = -v;
   }
   analogWrite(e, v);
+}
+
+void motorR(int v) {
+  motor(ENA, IN1, IN2, v);
+}
+
+void motorL(int v) {
+  motor(ENB, IN3, IN4, v);
 }
 
 void move(int l, int r) {
@@ -57,20 +67,22 @@ void look(int deg) {
 #define lookleft(deg)   do look( deg); while (0)
 #define lookright(deg)  do look(-deg); while (0)
 
-int ir() {
-  decode_results results = {};
-  if (irrecv.decode(&results)) {
-    irrecv.resume();
-  }
-  return results.value;
-}
-
 void onPacket(const uint8_t* buf, size_t size) {
   Command cmd = Command_init_zero;
 
   pb_istream_t istream = pb_istream_from_buffer(buf, size);
   pb_decode_delimited(&istream, Command_fields, &cmd);
 
+  if (cmd.has_SpeedR) {
+    motorR(cmd.SpeedR);
+  }
+  if (cmd.has_SpeedL) {
+    motorL(cmd.SpeedL);
+  }
+  if (cmd.has_Stop && cmd.Stop) {
+    motorR(0);
+    motorL(0);
+  }
   if (cmd.has_TurnHead) {
     servo.write(90 + cmd.TurnHead);
   }
@@ -87,17 +99,20 @@ void env() {
   evt.Distance = distance();
   evt.has_Distance = evt.Distance > 0;
 
-  evt.SensorR = !digitalRead(SR);
+  evt.SensorR = digitalRead(SR);
   evt.has_SensorR = true;
 
-  evt.SensorC = !digitalRead(SC);
+  evt.SensorC = digitalRead(SC);
   evt.has_SensorC = true;
 
-  evt.SensorL = !digitalRead(SL);
+  evt.SensorL = digitalRead(SL);
   evt.has_SensorL = true;
 
-  evt.KeyPress = ir();
-  evt.has_KeyPress = evt.KeyPress != 0;
+  if (irrecv.decode(&ir)) {
+    evt.KeyPress = ir.value;
+    evt.has_KeyPress = ir.bits > 0;
+    irrecv.resume();
+  }
 
   pb_ostream_t ostream = pb_ostream_from_buffer(buf, sizeof(buf));
   pb_encode_delimited(&ostream, Event_fields, &evt);
@@ -114,8 +129,6 @@ void loop() {
 void setup() {
   serial.begin(57600);
   serial.setPacketHandler(&onPacket);
-  //pb_istream_from_stream(Serial, istream);
-  //pb_ostream_from_stream(Serial, ostream);
 
   pinMode(Echo, INPUT);
   pinMode(Trig, OUTPUT);

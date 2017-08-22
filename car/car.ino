@@ -18,11 +18,13 @@ IRrecv irrecv(IR);
 decode_results ir;
 
 void motor(int e, int a, int b, int v) {
-  if (v > 0) {
+  if (v == 0) {
+    digitalWrite(a, LOW);
+    digitalWrite(b, LOW);
+  } else if (v > 0) {
     digitalWrite(a, LOW);
     digitalWrite(b, HIGH);
-  }
-  if (v < 0) {
+  } else if (v < 0) {
     digitalWrite(a, HIGH);
     digitalWrite(b, LOW);
     v = -v;
@@ -68,7 +70,7 @@ void onPacket(const uint8_t* buf, size_t size) {
   }
 }
 
-void env() {
+void events() {
   uint8_t buf[256];
 
   Event evt = Event_init_zero;
@@ -101,7 +103,7 @@ void env() {
 }
 
 void loop() {
-  env();
+  events();
   serial.update();
   delay(100);
 }

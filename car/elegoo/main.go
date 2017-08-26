@@ -39,9 +39,9 @@ func Read(buf *bufio.Reader, pb proto.Message) error {
 
 func main() {
 	c := &serial.Config{
-		//Name: "/dev/tty.usbmodem1421",
+		Name: "/dev/tty.usbmodem1421",
 		//Name: "/dev/tty.usbmodem1411",
-		Name: "/dev/tty.Elegoo-DevB",
+		//Name: "/dev/tty.Elegoo-DevB",
 		Baud: 57600,
 	}
 	s, err := serial.OpenPort(c)
@@ -64,25 +64,20 @@ func main() {
 	}()
 
 	log.Println("send -45")
-	time.Sleep(time.Second)
-	Write(s, &Command{Direction: -45})
+	time.Sleep(3 * time.Second)
+	Write(s, &Command{Direction: 5})
 
 	log.Println("send +45")
-	time.Sleep(time.Second)
-	Write(s, &Command{Direction: 45})
+	time.Sleep(3 * time.Second)
+	Write(s, &Command{Direction: 175})
 
-	log.Println("send center")
-	time.Sleep(time.Second)
-	Write(s, &Command{Center: true})
-
-	log.Println("send -5")
-	time.Sleep(time.Second)
-	Write(s, &Command{Direction: -5})
+	log.Println("send +0")
+	time.Sleep(3 * time.Second)
+	Write(s, &Command{Direction: 90})
 
 	/* log.Println("send motor")
 	Write(s, &Command{SpeedL: 200, SpeedR: 200, StopAfter: 1000})
 	time.Sleep(time.Second)
-	*/
 
 	log.Println("send motor turn")
 	time.Sleep(time.Second)
@@ -91,6 +86,7 @@ func main() {
 	log.Println("send motor turn")
 	time.Sleep(time.Second)
 	Write(s, &Command{SpeedL: 250, SpeedR: -250, StopAfter: 500})
+	*/
 
 	time.Sleep(time.Minute)
 

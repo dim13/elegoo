@@ -35,8 +35,6 @@ void motor(int e, int a, int b, int v) {
 
 #define motorR(v) motor(ENA, IN1, IN2, v)
 #define motorL(v) motor(ENB, IN3, IN4, v)
-#define look(v) servo.write(v)
-#define looking() (servo.read())
 
 int distance() {
   digitalWrite(Trig, LOW);
@@ -68,7 +66,7 @@ void onPacket(const uint8_t* buf, size_t size) {
     stop();
   }
   if (cmd.has_Direction) {
-    look(cmd.Direction);
+    servo.write(cmd.Direction);
   }
   if (cmd.has_StopAfter) {
     timer.after(cmd.StopAfter, stop);
@@ -98,7 +96,7 @@ void events() {
     irrecv.resume();
   }
 
-  evt.Direction = looking();
+  evt.Direction = servo.read();
   evt.has_Direction = true;
 
   evt.Time = millis();

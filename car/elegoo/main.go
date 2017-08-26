@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"io"
 	"log"
-	"time"
 
 	"github.com/dim13/cobs"
 	"github.com/golang/protobuf/proto"
@@ -37,11 +36,30 @@ func Read(buf *bufio.Reader, pb proto.Message) error {
 // /dev/cu.usbmodem1421
 // /dev/cu.usbmodem1411
 
+func events(r io.Reader) chan *Events {
+	c := make(chan *Events)
+	buf := bufio.NewReader(r)
+	go func() {
+		for {
+			evt := &Events{}
+			if err := Read(buf, evt); err != nil {
+				if err == io.ErrUnexpectedEOF {
+					continue
+				}
+				log.Println("ERR", err)
+				return
+			}
+			c <- evt
+		}
+	}()
+	return c
+}
+
 func main() {
 	c := &serial.Config{
-		Name: "/dev/tty.usbmodem1421",
+		//Name: "/dev/tty.usbmodem1421",
 		//Name: "/dev/tty.usbmodem1411",
-		//Name: "/dev/tty.Elegoo-DevB",
+		Name: "/dev/tty.Elegoo-DevB",
 		Baud: 57600,
 	}
 	s, err := serial.OpenPort(c)
@@ -49,21 +67,12 @@ func main() {
 		log.Fatal(err)
 	}
 	defer s.Close()
-	log.Println("connected")
 
-	go func() {
-		log.Println("recv")
-		buf := bufio.NewReader(s)
-		for {
-			evt := &Events{}
-			if err := Read(buf, evt); err != nil {
-				log.Println("ERR", err)
-			}
-			log.Println(evt)
-		}
-	}()
+	for e := range events(s) {
+		log.Println(e)
+	}
 
-	log.Println("send -45")
+	/* log.Println("send -45")
 	time.Sleep(3 * time.Second)
 	Write(s, &Command{Direction: 5})
 
@@ -74,6 +83,7 @@ func main() {
 	log.Println("send +0")
 	time.Sleep(3 * time.Second)
 	Write(s, &Command{Direction: 90})
+	*/
 
 	/* log.Println("send motor")
 	Write(s, &Command{SpeedL: 200, SpeedR: 200, StopAfter: 1000})
@@ -87,8 +97,6 @@ func main() {
 	time.Sleep(time.Second)
 	Write(s, &Command{SpeedL: 250, SpeedR: -250, StopAfter: 500})
 	*/
-
-	time.Sleep(time.Minute)
 
 	/* MOTOR
 	cmd.SpeedL = 200
@@ -114,5 +122,4 @@ func main() {
 	cmd.Stop = true
 	Write(s, cmd)
 	*/
-
 }

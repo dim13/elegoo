@@ -36,7 +36,7 @@ func Read(buf *bufio.Reader, pb proto.Message) error {
 // /dev/cu.usbmodem1421
 // /dev/cu.usbmodem1411
 
-func events(r io.Reader) chan *Events {
+func Reader(r io.Reader) chan *Events {
 	c := make(chan *Events)
 	buf := bufio.NewReader(r)
 	go func() {
@@ -55,6 +55,17 @@ func events(r io.Reader) chan *Events {
 	return c
 }
 
+func Writer(w io.Writer) chan *Command {
+	c := make(chan *Command)
+	go func() {
+		for cmd := range c {
+			log.Println("send", cmd)
+			Write(w, cmd)
+		}
+	}()
+	return c
+}
+
 func main() {
 	c := &serial.Config{
 		//Name: "/dev/tty.usbmodem1421",
@@ -68,8 +79,15 @@ func main() {
 	}
 	defer s.Close()
 
-	for e := range events(s) {
-		log.Println(e)
+	w := Writer(s)
+
+	w <- &Command{Direction: 80}
+
+	for e := range Reader(s) {
+		log.Println("event", e)
+		if e.SensorC || e.Distance < 20 {
+			w <- &Command{Stop: true}
+		}
 	}
 
 	/* log.Println("send -45")

@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+
+
 option go_package = "main";
 
 message Command {
@@ -8,13 +10,15 @@ message Command {
 	bool Stop = 3;
 	bool Center = 4;
 	sint32 Direction = 5; // +90 left; -90 right
+	uint32 StopAfter = 6; // milliseconds
 }
 
-message Event {
+message Events {
 	uint32 Distance = 1;
 	sint32 Direction = 2;
 	bool SensorR = 3;
 	bool SensorC = 4;
 	bool SensorL = 5;
 	uint32 KeyPress = 6;
+	uint32 Time = 7;
 }

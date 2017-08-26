@@ -3,6 +3,7 @@
 
 #include <PacketSerial.h>
 #include <Servo.h>
+#include <Timer.h>
 #include <IRremote.h>
 
 #include <pb_encode.h>
@@ -13,7 +14,7 @@
 
 PacketSerial serial;
 Servo servo;
-
+Timer timer;
 IRrecv irrecv(IR);
 decode_results ir;
 
@@ -46,6 +47,11 @@ int distance() {
   return pulseIn(Echo, HIGH, TimeOut) / ToCM;
 }
 
+void stop() {
+  motorR(0);
+  motorL(0);
+}
+
 void onPacket(const uint8_t* buf, size_t size) {
   Command cmd = Command_init_zero;
 
@@ -59,8 +65,7 @@ void onPacket(const uint8_t* buf, size_t size) {
     motorL(cmd.SpeedL);
   }
   if (cmd.has_Stop) {
-    motorR(0);
-    motorL(0);
+    stop();
   }
   if (cmd.has_Direction) {
     look(cmd.Direction);
@@ -68,12 +73,15 @@ void onPacket(const uint8_t* buf, size_t size) {
   if (cmd.has_Center) {
     look(0);
   }
+  if (cmd.has_StopAfter) {
+    timer.after(cmd.StopAfter, stop);
+  }
 }
 
 void events() {
-  uint8_t buf[256];
+  uint8_t buf[64];
 
-  Event evt = Event_init_zero;
+  Events evt = Events_init_zero;
 
   evt.Distance = distance();
   evt.has_Distance = evt.Distance > 0;
@@ -96,16 +104,18 @@ void events() {
   evt.Direction = looking();
   evt.has_Direction = true;
 
+  evt.Time = millis();
+  evt.has_Time = true;
+
   pb_ostream_t ostream = pb_ostream_from_buffer(buf, sizeof(buf));
-  pb_encode_delimited(&ostream, Event_fields, &evt);
+  pb_encode_delimited(&ostream, Events_fields, &evt);
 
   serial.send(buf, ostream.bytes_written);
 }
 
 void loop() {
-  events();
+  timer.update();
   serial.update();
-  delay(100);
 }
 
 void setup() {
@@ -133,4 +143,7 @@ void setup() {
 
   servo.attach(SRV);
   servo.write(90);
+
+  timer.every(100, events);
+  timer.oscillate(LED, 500, LOW);
 }

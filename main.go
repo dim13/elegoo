@@ -15,12 +15,10 @@ import (
 
 func Write(w io.Writer, pb proto.Message) error {
 	buf := new(proto.Buffer)
-	err := buf.EncodeMessage(pb)
-	if err != nil {
+	if err := buf.EncodeMessage(pb); err != nil {
 		return err
 	}
-	block := cobs.Encode(buf.Bytes())
-	_, err = w.Write(block)
+	_, err := w.Write(cobs.Encode(buf.Bytes()))
 	return err
 }
 
@@ -29,53 +27,54 @@ func Read(buf *bufio.Reader, pb proto.Message) error {
 	if err != nil {
 		return err
 	}
-	block = cobs.Decode(block)
-	return proto.NewBuffer(block).DecodeMessage(pb)
+	return proto.NewBuffer(cobs.Decode(block)).DecodeMessage(pb)
 }
 
-// /dev/cu.Elegoo-DevB
-// /dev/cu.usbmodem1421
-// /dev/cu.usbmodem1411
-
-func Reader(r io.Reader) chan *Events {
+func Reader(r io.Reader) <-chan *Events {
 	c := make(chan *Events)
 	buf := bufio.NewReader(r)
 	go func() {
 		for {
-			e := &Events{}
-			if err := Read(buf, e); err != nil {
+			event := &Events{}
+			if err := Read(buf, event); err != nil {
 				if err == io.ErrUnexpectedEOF {
 					continue
 				}
 				log.Println("ERR", err)
 				return
 			}
-			log.Println("<-", e)
-			c <- e
+			log.Println("<-", event)
+			c <- event
 		}
 	}()
 	return c
 }
 
-func Writer(w io.Writer) chan *Command {
+func Writer(w io.Writer) chan<- *Command {
 	c := make(chan *Command)
 	go func() {
-		for cmd := range c {
-			log.Println("->", cmd)
-			Write(w, cmd)
+		for command := range c {
+			log.Println("->", command)
+			if err := Write(w, command); err != nil {
+				if err == io.ErrUnexpectedEOF {
+					continue
+				}
+				log.Println("ERR", err)
+				return
+			}
 		}
 	}()
 	return c
 }
 
 func main() {
-	c := &serial.Config{
+	conf := &serial.Config{
 		//Name: "/dev/tty.usbmodem1421",
 		//Name: "/dev/tty.usbmodem1411",
 		Name: "/dev/tty.Elegoo-DevB",
 		Baud: 57600,
 	}
-	s, err := serial.OpenPort(c)
+	s, err := serial.OpenPort(conf)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,24 +94,11 @@ func main() {
 		w <- &Command{Direction: 85}
 	}()
 
-	for e := range Reader(s) {
-		if e.SensorC || e.Distance < 20 {
+	for event := range Reader(s) {
+		if event.SensorC || event.Distance < 20 {
 			//w <- &Command{Stop: true}
 		}
 	}
-
-	/* log.Println("send -45")
-	time.Sleep(3 * time.Second)
-	Write(s, &Command{Direction: 5})
-
-	log.Println("send +45")
-	time.Sleep(3 * time.Second)
-	Write(s, &Command{Direction: 175})
-
-	log.Println("send +0")
-	time.Sleep(3 * time.Second)
-	Write(s, &Command{Direction: 90})
-	*/
 
 	/* log.Println("send motor")
 	Write(s, &Command{SpeedL: 200, SpeedR: 200, StopAfter: 1000})
@@ -125,30 +111,5 @@ func main() {
 	log.Println("send motor turn")
 	time.Sleep(time.Second)
 	Write(s, &Command{SpeedL: 250, SpeedR: -250, StopAfter: 500})
-	*/
-
-	/* MOTOR
-	cmd.SpeedL = 200
-	cmd.SpeedR = 0
-	cmd.Stop = false
-	Write(s, cmd)
-	time.Sleep(3 * time.Second)
-
-	cmd.SpeedL = 0
-	cmd.SpeedR = 0
-	cmd.Stop = true
-	Write(s, cmd)
-	time.Sleep(3 * time.Second)
-
-	cmd.SpeedL = 0
-	cmd.SpeedR = 200
-	cmd.Stop = false
-	Write(s, cmd)
-	time.Sleep(3 * time.Second)
-
-	cmd.SpeedL = 0
-	cmd.SpeedR = 0
-	cmd.Stop = true
-	Write(s, cmd)
 	*/
 }

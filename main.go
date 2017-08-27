@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"io"
 	"log"
+	"time"
 
 	"github.com/dim13/cobs"
 	"github.com/golang/protobuf/proto"
@@ -41,15 +42,16 @@ func Reader(r io.Reader) chan *Events {
 	buf := bufio.NewReader(r)
 	go func() {
 		for {
-			evt := &Events{}
-			if err := Read(buf, evt); err != nil {
+			e := &Events{}
+			if err := Read(buf, e); err != nil {
 				if err == io.ErrUnexpectedEOF {
 					continue
 				}
 				log.Println("ERR", err)
 				return
 			}
-			c <- evt
+			log.Println("<-", e)
+			c <- e
 		}
 	}()
 	return c
@@ -59,7 +61,7 @@ func Writer(w io.Writer) chan *Command {
 	c := make(chan *Command)
 	go func() {
 		for cmd := range c {
-			log.Println("send", cmd)
+			log.Println("->", cmd)
 			Write(w, cmd)
 		}
 	}()
@@ -81,12 +83,21 @@ func main() {
 
 	w := Writer(s)
 
-	w <- &Command{Direction: 80}
+	go func() {
+		for i := 30; i < 140; i += 10 {
+			w <- &Command{Direction: uint32(i)}
+			time.Sleep(100 * time.Millisecond)
+		}
+		for i := 140; i > 30; i -= 10 {
+			w <- &Command{Direction: uint32(i)}
+			time.Sleep(100 * time.Millisecond)
+		}
+		w <- &Command{Direction: 85}
+	}()
 
 	for e := range Reader(s) {
-		log.Println("event", e)
 		if e.SensorC || e.Distance < 20 {
-			w <- &Command{Stop: true}
+			//w <- &Command{Stop: true}
 		}
 	}
 

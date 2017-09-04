@@ -53,5 +53,24 @@ func (f *FSM) Start() {
 }
 
 func (f *FSM) initalState() stateFn {
+	f.command <- &Command{Direction: 85}
+	return f.readDistance
+}
+
+func (f *FSM) readDistance() stateFn {
+	ev := <-f.events
+	if ev.Distance < 20 {
+		return f.stop
+	}
+	return f.moveAhead
+}
+
+func (f *FSM) moveAhead() stateFn {
+	f.command <- &Command{SpeedL: 200, SpeedR: 200}
+	return f.readDistance
+}
+
+func (f *FSM) stop() stateFn {
+	f.command <- &Command{Stop: true}
 	return nil
 }

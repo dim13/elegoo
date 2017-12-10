@@ -53,12 +53,13 @@ func (f *FSM) Start() {
 }
 
 func (f *FSM) initalState() stateFn {
-	f.command <- &Command{Direction: 85}
+	f.command <- &Command{Direction: 90}
 	return f.readDistance
 }
 
 func (f *FSM) readDistance() stateFn {
 	ev := <-f.events
+	log.Println(ev)
 	if ev.Distance < 20 {
 		return f.stop
 	}
@@ -72,5 +73,5 @@ func (f *FSM) moveAhead() stateFn {
 
 func (f *FSM) stop() stateFn {
 	f.command <- &Command{Stop: true}
-	return nil
+	return f.readDistance
 }

@@ -36,7 +36,7 @@ void motor(int e, int a, int b, int v) {
 #define motorR(v) motor(ENA, IN1, IN2, v)
 #define motorL(v) motor(ENB, IN3, IN4, v)
 
-int distance() {
+int readDistance() {
   digitalWrite(Trig, LOW);
   delayMicroseconds(2);
   digitalWrite(Trig, HIGH);
@@ -78,7 +78,7 @@ void events() {
 
   Events evt = Events_init_zero;
 
-  evt.Distance = distance();
+  evt.Distance = readDistance();
   evt.has_Distance = evt.Distance > 0;
 
   evt.SensorR = digitalRead(SR);

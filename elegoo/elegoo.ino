@@ -56,19 +56,19 @@ void onPacket(const uint8_t* buf, size_t size) {
   pb_istream_t istream = pb_istream_from_buffer(buf, size);
   pb_decode_delimited(&istream, Command_fields, &cmd);
 
-  if (cmd.has_SpeedR) {
+  if (cmd.SpeedR > 0) {
     motorR(cmd.SpeedR);
   }
-  if (cmd.has_SpeedL) {
+  if (cmd.SpeedL > 0) {
     motorL(cmd.SpeedL);
   }
-  if (cmd.has_Stop) {
+  if (cmd.Stop) {
     stop();
   }
-  if (cmd.has_Direction) {
+  if (cmd.Direction > 0) {
     servo.write(cmd.Direction);
   }
-  if (cmd.has_StopAfter) {
+  if (cmd.StopAfter > 0) {
     timer.after(cmd.StopAfter, stop);
   }
 }
@@ -79,28 +79,17 @@ void events() {
   Events evt = Events_init_zero;
 
   evt.Distance = readDistance();
-  evt.has_Distance = evt.Distance > 0;
-
   evt.SensorR = digitalRead(SR);
-  evt.has_SensorR = true;
-
   evt.SensorC = digitalRead(SC);
-  evt.has_SensorC = true;
-
   evt.SensorL = digitalRead(SL);
-  evt.has_SensorL = true;
 
   if (irrecv.decode(&ir)) {
     evt.KeyPress = ir.value;
-    evt.has_KeyPress = ir.bits > 0;
     irrecv.resume();
   }
 
   evt.Direction = servo.read();
-  evt.has_Direction = true;
-
   evt.Time = millis();
-  evt.has_Time = true;
 
   pb_ostream_t ostream = pb_ostream_from_buffer(buf, sizeof(buf));
   pb_encode_delimited(&ostream, Events_fields, &evt);

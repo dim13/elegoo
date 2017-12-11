@@ -51,16 +51,16 @@ void stop() {
 }
 
 void onPacket(const uint8_t* buf, size_t size) {
-  Command cmd = Command_init_zero;
+  elegoo_Command cmd = elegoo_Command_init_zero;
 
   pb_istream_t istream = pb_istream_from_buffer(buf, size);
-  pb_decode_delimited(&istream, Command_fields, &cmd);
+  pb_decode_delimited(&istream, elegoo_Command_fields, &cmd);
 
-  if (cmd.SpeedR > 0) {
-    motorR(cmd.SpeedR);
+  if (cmd.Speed.R > 0) {
+    motorR(cmd.Speed.R);
   }
-  if (cmd.SpeedL > 0) {
-    motorL(cmd.SpeedL);
+  if (cmd.Speed.L > 0) {
+    motorL(cmd.Speed.L);
   }
   if (cmd.Stop) {
     stop();
@@ -76,12 +76,12 @@ void onPacket(const uint8_t* buf, size_t size) {
 void events() {
   uint8_t buf[64];
 
-  Events evt = Events_init_zero;
+  elegoo_Events evt = elegoo_Events_init_zero;
 
   evt.Distance = readDistance();
-  evt.SensorR = digitalRead(SR);
-  evt.SensorC = digitalRead(SC);
-  evt.SensorL = digitalRead(SL);
+  evt.Sensor.R = digitalRead(SR);
+  evt.Sensor.C = digitalRead(SC);
+  evt.Sensor.L = digitalRead(SL);
 
   if (irrecv.decode(&ir)) {
     evt.KeyPress = ir.value;
@@ -92,7 +92,7 @@ void events() {
   evt.Time = millis();
 
   pb_ostream_t ostream = pb_ostream_from_buffer(buf, sizeof(buf));
-  pb_encode_delimited(&ostream, Events_fields, &evt);
+  pb_encode_delimited(&ostream, elegoo_Events_fields, &evt);
 
   serial.send(buf, ostream.bytes_written);
 }

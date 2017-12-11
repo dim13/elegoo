@@ -4,20 +4,28 @@ package elegoo;
 
 option go_package = "main";
 
+message Speed {
+	sint32 L = 1;		// -255 .. + 255
+	sint32 R = 2;		// -255 .. + 255
+}
+
 message Command {
-	sint32 SpeedR = 1;	// -255 .. +255
-	sint32 SpeedL = 2;	// -255 .. +255
+	Speed Speed = 1;
 	bool Stop = 3;
 	uint32 Direction = 4;	// deg: 0 right .. 180 left
 	uint32 StopAfter = 5;	// milliseconds
 }
 
+message Sensor {
+	bool R = 1;
+	bool C = 2;
+	bool L = 3;
+}
+
 message Events {
 	uint32 Distance = 1;	// cm
 	sint32 Direction = 2;	// deg
-	bool SensorR = 3;
-	bool SensorC = 4;
-	bool SensorL = 5;
+	Sensor Sensor = 3;
 	uint32 KeyPress = 6;
 	uint32 Time = 7;	// milliseconds
 }

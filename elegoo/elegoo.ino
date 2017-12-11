@@ -76,23 +76,24 @@ void onPacket(const uint8_t* buf, size_t size) {
 void events() {
   uint8_t buf[64];
 
-  elegoo_Events evt = elegoo_Events_init_zero;
+  elegoo_Event evt = elegoo_Event_init_zero;
 
-  evt.Distance = readDistance();
+  evt.Head.Distance = readDistance();
+  evt.Head.Direction = servo.read();
+
   evt.Sensor.R = digitalRead(SR);
   evt.Sensor.C = digitalRead(SC);
   evt.Sensor.L = digitalRead(SL);
 
   if (irrecv.decode(&ir)) {
-    evt.KeyPress = ir.value;
+    evt.Remote.Key = ir.value;
     irrecv.resume();
   }
 
-  evt.Direction = servo.read();
-  evt.Time = millis();
+  evt.TimeStamp = millis();
 
   pb_ostream_t ostream = pb_ostream_from_buffer(buf, sizeof(buf));
-  pb_encode_delimited(&ostream, elegoo_Events_fields, &evt);
+  pb_encode_delimited(&ostream, elegoo_Event_fields, &evt);
 
   serial.send(buf, ostream.bytes_written);
 }

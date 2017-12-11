@@ -9,22 +9,22 @@ import (
 type stateFn func() stateFn
 
 type FSM struct {
-	events  chan *Events
+	events  chan *Event
 	command chan *Command
 }
 
 func NewFSM(rw io.ReadWriter) *FSM {
-	events := make(chan *Events)
+	events := make(chan *Event)
 	command := make(chan *Command)
 	go readEvents(rw, events)
 	go writeCommands(rw, command)
 	return &FSM{events: events, command: command}
 }
 
-func readEvents(r io.Reader, ch chan<- *Events) {
+func readEvents(r io.Reader, ch chan<- *Event) {
 	buf := bufio.NewReader(r)
 	for {
-		event := new(Events)
+		event := new(Event)
 		if err := Recv(buf, event); err != nil {
 			if err == io.ErrUnexpectedEOF {
 				continue
@@ -60,14 +60,14 @@ func (f *FSM) initalState() stateFn {
 func (f *FSM) readDistance() stateFn {
 	ev := <-f.events
 	log.Println(ev)
-	if ev.Distance < 20 {
+	if ev.Head.Distance < 20 {
 		return f.stop
 	}
 	return f.moveAhead
 }
 
 func (f *FSM) moveAhead() stateFn {
-	f.command <- &Command{SpeedL: 200, SpeedR: 200}
+	f.command <- &Command{Speed: &Speed{L: 200, R: 200}}
 	return f.readDistance
 }
 

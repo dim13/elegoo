@@ -16,16 +16,24 @@ message Command {
 	uint32 StopAfter = 5;	// milliseconds
 }
 
-message Sensor {
+message UltraSonic {
+	uint32 Distance = 1;	// cm
+	sint32 Direction = 2;	// deg
+}
+
+message InfraRed {
 	bool R = 1;
 	bool C = 2;
 	bool L = 3;
 }
 
-message Events {
-	uint32 Distance = 1;	// cm
-	sint32 Direction = 2;	// deg
-	Sensor Sensor = 3;
-	uint32 KeyPress = 6;
-	uint32 Time = 7;	// milliseconds
+message RemoteControl {
+	uint32 Key = 1;
+}
+
+message Event {
+	UltraSonic Head = 1;
+	InfraRed Sensor = 2;
+	RemoteControl Remote = 3;
+	uint32 TimeStamp = 4;	// milliseconds
 }

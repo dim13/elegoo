@@ -53,7 +53,7 @@ func (f *FSM) Start() {
 }
 
 func (f *FSM) initalState() stateFn {
-	f.commands <- &Command{Direction: 90}
+	f.commands <- &Command{Look: 90}
 	return f.readDistance
 }
 

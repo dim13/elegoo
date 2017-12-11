@@ -65,8 +65,8 @@ void onPacket(const uint8_t* buf, size_t size) {
   if (cmd.Stop) {
     stop();
   }
-  if (cmd.Direction > 0) {
-    servo.write(cmd.Direction);
+  if (cmd.Look > 0) {
+    servo.write(cmd.Look);
   }
   if (cmd.StopAfter > 0) {
     timer.after(cmd.StopAfter, stop);

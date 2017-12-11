@@ -12,7 +12,7 @@ message Speed {
 message Command {
 	Speed Speed = 1;
 	bool Stop = 3;
-	uint32 Direction = 4;	// deg: 0 right .. 180 left
+	uint32 Look = 4;	// deg: 0 right .. 180 left
 	uint32 StopAfter = 5;	// milliseconds
 }
 

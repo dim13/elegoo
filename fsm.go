@@ -9,16 +9,16 @@ import (
 type stateFn func() stateFn
 
 type FSM struct {
-	events  chan *Event
-	command chan *Command
+	events   chan *Event
+	commands chan *Command
 }
 
 func NewFSM(rw io.ReadWriter) *FSM {
 	events := make(chan *Event)
-	command := make(chan *Command)
+	commands := make(chan *Command)
 	go readEvents(rw, events)
-	go writeCommands(rw, command)
-	return &FSM{events: events, command: command}
+	go writeCommands(rw, commands)
+	return &FSM{events: events, commands: commands}
 }
 
 func readEvents(r io.Reader, ch chan<- *Event) {
@@ -53,7 +53,7 @@ func (f *FSM) Start() {
 }
 
 func (f *FSM) initalState() stateFn {
-	f.command <- &Command{Direction: 90}
+	f.commands <- &Command{Direction: 90}
 	return f.readDistance
 }
 
@@ -67,11 +67,11 @@ func (f *FSM) readDistance() stateFn {
 }
 
 func (f *FSM) moveAhead() stateFn {
-	f.command <- &Command{Speed: &Speed{L: 200, R: 200}}
+	f.commands <- &Command{Speed: &Speed{L: 200, R: 200}}
 	return f.readDistance
 }
 
 func (f *FSM) stop() stateFn {
-	f.command <- &Command{Stop: true}
+	f.commands <- &Command{Stop: true}
 	return f.readDistance
 }

@@ -53,7 +53,7 @@ func (f *FSM) Start() {
 }
 
 func (f *FSM) initalState() stateFn {
-	f.commands <- &Command{Look: 90}
+	f.commands <- &Command{Look: 0}
 	return f.readDistance
 }
 
@@ -72,6 +72,6 @@ func (f *FSM) moveAhead() stateFn {
 }
 
 func (f *FSM) stop() stateFn {
-	f.commands <- &Command{Stop: true}
+	f.commands <- &Command{}
 	return f.readDistance
 }

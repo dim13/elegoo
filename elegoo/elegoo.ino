@@ -56,21 +56,12 @@ void onPacket(const uint8_t* buf, size_t size) {
   pb_istream_t istream = pb_istream_from_buffer(buf, size);
   pb_decode_delimited(&istream, elegoo_Command_fields, &cmd);
 
-  if (cmd.Speed.R > 0) {
-    motorR(cmd.Speed.R);
+  motorR(cmd.Speed.R);
+  motorL(cmd.Speed.L);
+  if (cmd.Speed.StopAfter > 0) {
+    timer.after(cmd.Speed.StopAfter, stop);
   }
-  if (cmd.Speed.L > 0) {
-    motorL(cmd.Speed.L);
-  }
-  if (cmd.Stop) {
-    stop();
-  }
-  if (cmd.Look > 0) {
-    servo.write(cmd.Look);
-  }
-  if (cmd.StopAfter > 0) {
-    timer.after(cmd.StopAfter, stop);
-  }
+  servo.write(cmd.Look + 90);
 }
 
 void events() {
@@ -79,7 +70,7 @@ void events() {
   elegoo_Event evt = elegoo_Event_init_zero;
 
   evt.Head.Distance = readDistance();
-  evt.Head.Direction = servo.read();
+  evt.Head.Direction = servo.read() - 90;
 
   evt.Sensor.R = digitalRead(SR);
   evt.Sensor.C = digitalRead(SC);

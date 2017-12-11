@@ -7,13 +7,12 @@ option go_package = "main";
 message Speed {
 	sint32 L = 1;		// -255 .. + 255
 	sint32 R = 2;		// -255 .. + 255
+	uint32 StopAfter = 3;	// milliseconds
 }
 
 message Command {
 	Speed Speed = 1;
-	bool Stop = 3;
-	uint32 Look = 4;	// deg: 0 right .. 180 left
-	uint32 StopAfter = 5;	// milliseconds
+	sint32 Look = 2;	// deg: -90 right .. +90 left
 }
 
 message UltraSonic {
@@ -32,8 +31,8 @@ message RemoteControl {
 }
 
 message Event {
-	UltraSonic Head = 1;
-	InfraRed Sensor = 2;
-	RemoteControl Remote = 3;
-	uint32 TimeStamp = 4;	// milliseconds
+	uint32 TimeStamp = 1;	// milliseconds
+	UltraSonic Head = 2;
+	InfraRed Sensor = 3;
+	RemoteControl Remote = 4;
 }

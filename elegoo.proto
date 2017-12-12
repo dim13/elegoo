@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package elegoo;
 
-option go_package = "main";
+option go_package = "elegoo";
 
 message Speed {
 	sint32 L = 1;		// -255 .. + 255

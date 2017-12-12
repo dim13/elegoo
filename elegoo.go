@@ -5,10 +5,10 @@ import (
 	"io"
 
 	"github.com/dim13/cobs"
-	proto "github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
-//go:generate sh -c "protoc --go_out=. --nanopb_out=elegoo/ *.proto"
+//go:generate sh -c "protoc --go_out=. --nanopb_out=firmware/ *.proto"
 
 func Send(w io.Writer, pb proto.Message) error {
 	buf := new(proto.Buffer)

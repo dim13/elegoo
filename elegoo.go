@@ -19,6 +19,14 @@ func Send(w io.Writer, pb proto.Message) error {
 	return err
 }
 
+func RecvR(r io.Reader, pb proto.Message) error {
+	block, err := bufio.NewReader(r).ReadBytes(0)
+	if err != nil {
+		return err
+	}
+	return proto.NewBuffer(cobs.Decode(block)).DecodeMessage(pb)
+}
+
 func Recv(buf *bufio.Reader, pb proto.Message) error {
 	block, err := buf.ReadBytes(0)
 	if err != nil {

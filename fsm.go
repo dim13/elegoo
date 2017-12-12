@@ -60,7 +60,7 @@ func (f *FSM) initalState() stateFn {
 func (f *FSM) readDistance() stateFn {
 	ev := <-f.events
 	log.Println(ev)
-	if ev.Head.Distance < 20 {
+	if ev.Head != nil && ev.Head.Distance < 20 {
 		return f.stop
 	}
 	return f.moveAhead

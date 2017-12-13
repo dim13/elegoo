@@ -1,7 +1,6 @@
 package elegoo
 
 import (
-	"bufio"
 	"io"
 	"log"
 )
@@ -16,16 +15,16 @@ type FSM struct {
 func NewFSM(rw io.ReadWriter) *FSM {
 	events := make(chan *Event)
 	commands := make(chan *Command)
-	go readEvents(rw, events)
-	go writeCommands(rw, commands)
+	comm := NewComm(rw)
+	go readEvents(comm, events)
+	go writeCommands(comm, commands)
 	return &FSM{events: events, commands: commands}
 }
 
-func readEvents(r io.Reader, ch chan<- *Event) {
-	buf := bufio.NewReader(r)
+func readEvents(c ProtoComm, ch chan<- *Event) {
 	for {
 		event := new(Event)
-		if err := Recv(buf, event); err != nil {
+		if err := c.Recv(event); err != nil {
 			if err == io.ErrUnexpectedEOF {
 				continue
 			}
@@ -36,9 +35,9 @@ func readEvents(r io.Reader, ch chan<- *Event) {
 	}
 }
 
-func writeCommands(w io.Writer, ch <-chan *Command) {
+func writeCommands(c ProtoComm, ch <-chan *Command) {
 	for command := range ch {
-		if err := Send(w, command); err != nil {
+		if err := c.Send(command); err != nil {
 			if err == io.ErrUnexpectedEOF {
 				continue
 			}

@@ -25,7 +25,7 @@ func NewComm(rw io.ReadWriter) Comm {
 }
 
 func (c Comm) Send(pb proto.Message) error {
-	buf := new(proto.Buffer)
+	buf := proto.NewBuffer(nil)
 	if err := buf.EncodeMessage(pb); err != nil {
 		return err
 	}
@@ -40,5 +40,6 @@ func (c Comm) Recv(pb proto.Message) error {
 	if err != nil {
 		return err
 	}
-	return proto.NewBuffer(cobs.Decode(block)).DecodeMessage(pb)
+	buf := proto.NewBuffer(cobs.Decode(block))
+	return buf.DecodeMessage(pb)
 }

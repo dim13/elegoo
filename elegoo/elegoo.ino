@@ -28,9 +28,8 @@ void motor(int e, int a, int b, int v) {
   } else if (v < 0) {
     digitalWrite(a, HIGH);
     digitalWrite(b, LOW);
-    v = -v;
   }
-  analogWrite(e, v);
+  analogWrite(e, abs(v));
 }
 
 #define motorR(v) motor(ENA, IN1, IN2, v)

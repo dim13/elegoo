@@ -1,20 +1,20 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define LED  13
+#define LED  13 // LED_BUILDIN
 
 // Settings
 #define dist  20
 #define velo 130
 
 // Pinout motor
-#define ENA  5 // 10 pwm
-#define ENB  6 // 5  pwm
+#define ENA  5 // 10 pwm enable right
+#define ENB  6 //  5 pwm enable left
 
-#define IN1  7 // 9
-#define IN2  8 // 8
-#define IN3  9 // 7
-#define IN4 10 // 6
+#define IN1  7 //  9 direction backward right
+#define IN2  8 //  8 direction forward  right
+#define IN3  9 //  7 direction backward left
+#define IN4 10 //  6 direction forward  left
 
 // Pinout sensors
 #define SR  2 // right

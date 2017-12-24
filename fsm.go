@@ -3,6 +3,7 @@ package elegoo
 import (
 	"io"
 	"log"
+	"time"
 )
 
 type stateFn func() stateFn
@@ -10,6 +11,8 @@ type stateFn func() stateFn
 type FSM struct {
 	events   chan *Event
 	commands chan *Command
+	Look     int32
+	Speed    *Speed
 }
 
 func NewFSM(rw io.ReadWriter) *FSM {
@@ -52,25 +55,39 @@ func (f *FSM) Start() {
 }
 
 func (f *FSM) initalState() stateFn {
-	f.commands <- &Command{Look: 0}
+	f.commands <- &Command{}
 	return f.readDistance
 }
 
 func (f *FSM) readDistance() stateFn {
 	ev := <-f.events
 	log.Println(ev)
-	if ev.Head != nil && ev.Head.Distance < 20 {
+	if ev.Head != nil && ev.Head.Distance < 50 {
 		return f.stop
 	}
 	return f.moveAhead
 }
 
 func (f *FSM) moveAhead() stateFn {
-	f.commands <- &Command{Speed: &Speed{L: 200, R: 200}}
+	f.SetSpeed(200, 200, 0)
 	return f.readDistance
 }
 
 func (f *FSM) stop() stateFn {
-	f.commands <- &Command{}
+	f.SetSpeed(0, 0, 0)
 	return f.readDistance
+}
+
+func (f *FSM) SetSpeed(l, r int32, stop time.Duration) {
+	f.Speed = &Speed{
+		L:         l,
+		R:         r,
+		StopAfter: uint32(stop.Nanoseconds() / 1e6),
+	}
+	f.commands <- &Command{Speed: f.Speed, Look: f.Look}
+}
+
+func (f *FSM) SetDirection(dir int32) {
+	f.Look = dir
+	f.commands <- &Command{Speed: f.Speed, Look: f.Look}
 }

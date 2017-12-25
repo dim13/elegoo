@@ -8,7 +8,7 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-//go:generate sh -c "protoc --go_out=. --nanopb_out=firmware/ *.proto"
+//go:generate sh -c "protoc --go_out=. --nanopb_out=elegoo/ *.proto"
 
 type ProtoComm interface {
 	Send(pb proto.Message) error

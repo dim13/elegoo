@@ -15,24 +15,24 @@ message Command {
 	sint32 Look = 2;	// deg: -90 right .. +90 left
 }
 
-message UltraSonic {
+message Sonar {
 	uint32 Distance = 1;	// cm
 	sint32 Direction = 2;	// deg
 }
 
-message InfraRed {
+message Sensor {
 	bool R = 1;
 	bool C = 2;
 	bool L = 3;
 }
 
-message RemoteControl {
+message Remote {
 	uint32 Key = 1;
 }
 
 message Event {
 	uint32 TimeStamp = 1;	// milliseconds
-	UltraSonic Head = 2;
-	InfraRed Sensor = 3;
-	RemoteControl Remote = 4;
+	Sonar Head = 2;
+	Sensor Sensor = 3;
+	Remote Remote = 4;
 }

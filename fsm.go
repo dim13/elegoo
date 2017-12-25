@@ -15,6 +15,10 @@ type FSM struct {
 	Speed    *Speed
 }
 
+type Behaviour interface {
+	Behave(*Event) *Command
+}
+
 func NewFSM(rw io.ReadWriter) *FSM {
 	events := make(chan *Event)
 	commands := make(chan *Command)
@@ -65,12 +69,37 @@ func (f *FSM) readDistance() stateFn {
 	if ev.Head != nil && ev.Head.Distance < 50 {
 		return f.stop
 	}
-	return f.moveAhead
+	//return f.moveAhead
+	return f.lookLeft
 }
 
 func (f *FSM) moveAhead() stateFn {
 	f.SetSpeed(200, 200, 0)
 	return f.readDistance
+}
+
+func (f *FSM) lookLeft() stateFn {
+	f.SetDirection(-60)
+	time.Sleep(time.Second)
+	return f.lookAheadFromLeft
+}
+
+func (f *FSM) lookAheadFromLeft() stateFn {
+	f.SetDirection(0)
+	time.Sleep(time.Second)
+	return f.lookRight
+}
+
+func (f *FSM) lookRight() stateFn {
+	f.SetDirection(60)
+	time.Sleep(time.Second)
+	return f.lookAheadFromRight
+}
+
+func (f *FSM) lookAheadFromRight() stateFn {
+	f.SetDirection(0)
+	time.Sleep(time.Second)
+	return f.lookLeft
 }
 
 func (f *FSM) stop() stateFn {

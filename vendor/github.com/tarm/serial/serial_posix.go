@@ -1,4 +1,4 @@
-// +build !windows,cgo
+// +build !windows,!linux,cgo
 
 package serial
 
@@ -113,6 +113,7 @@ func openPort(name string, baud int, databits byte, parity Parity, stopbits Stop
 		st.c_cflag |= C.PARODD
 	case ParityEven:
 		st.c_cflag |= C.PARENB
+		st.c_cflag &= ^C.tcflag_t(C.PARODD)
 	default:
 		return nil, ErrBadParity
 	}

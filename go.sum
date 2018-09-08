@@ -1,0 +1,11 @@
+github.com/dim13/cobs v0.0.0-20170205164200-d5ce4ae918c3/go.mod h1:GpeOYCrmIfZs+sC2oZe4jYLbGmZ8JVoE4YTv8ZX/3DI=
+github.com/dim13/cobs v0.0.0-20170908221132-8b920b3e3367 h1:zOye2sZ/tPj8u7HzrMfKeK+EV35B7JZebnuB/jzBVB0=
+github.com/dim13/cobs v0.0.0-20170908221132-8b920b3e3367/go.mod h1:GpeOYCrmIfZs+sC2oZe4jYLbGmZ8JVoE4YTv8ZX/3DI=
+github.com/golang/protobuf v0.0.0-20170816001514-ab9f9a6dab16/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
+github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM=
+github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
+github.com/tarm/serial v0.0.0-20170530023055-e50d7d20b1f6/go.mod h1:kDXzergiv9cbyO7IOYJZWg1U88JhDg3PB6klq9Hg2pA=
+github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07 h1:UyzmZLoiDWMRywV4DUYb9Fbt8uiOSooupjTq10vpvnU=
+github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07/go.mod h1:kDXzergiv9cbyO7IOYJZWg1U88JhDg3PB6klq9Hg2pA=
+golang.org/x/sys v0.0.0-20180907202204-917fdcba135d h1:kWn1hlsqeUrk6JsLJO0ZFyz9bMg8u85voZlIuc68ZU4=
+golang.org/x/sys v0.0.0-20180907202204-917fdcba135d/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=

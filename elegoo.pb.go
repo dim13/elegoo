@@ -8,12 +8,12 @@ It is generated from these files:
 	elegoo.proto
 
 It has these top-level messages:
-	Speed
 	Command
+	Speed
+	Event
 	Sonar
 	Sensor
 	Remote
-	Event
 */
 package elegoo
 
@@ -32,16 +32,47 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// Command send to car
+type Command struct {
+	// Set speed
+	Speed *Speed `protobuf:"bytes,1,opt,name=Speed" json:"Speed,omitempty"`
+	// Rotate sonar head degree: -90 right .. +90 left
+	Look int32 `protobuf:"zigzag32,2,opt,name=Look" json:"Look,omitempty"`
+}
+
+func (m *Command) Reset()                    { *m = Command{} }
+func (m *Command) String() string            { return proto.CompactTextString(m) }
+func (*Command) ProtoMessage()               {}
+func (*Command) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+
+func (m *Command) GetSpeed() *Speed {
+	if m != nil {
+		return m.Speed
+	}
+	return nil
+}
+
+func (m *Command) GetLook() int32 {
+	if m != nil {
+		return m.Look
+	}
+	return 0
+}
+
+// Speed command
 type Speed struct {
-	L         int32  `protobuf:"zigzag32,1,opt,name=L" json:"L,omitempty"`
-	R         int32  `protobuf:"zigzag32,2,opt,name=R" json:"R,omitempty"`
+	// Left motor speed: -255 .. +255
+	L int32 `protobuf:"zigzag32,1,opt,name=L" json:"L,omitempty"`
+	// Right motor speed: -255 .. +255
+	R int32 `protobuf:"zigzag32,2,opt,name=R" json:"R,omitempty"`
+	// Stop after milliseconds, ignored if set to 0
 	StopAfter uint32 `protobuf:"varint,3,opt,name=StopAfter" json:"StopAfter,omitempty"`
 }
 
 func (m *Speed) Reset()                    { *m = Speed{} }
 func (m *Speed) String() string            { return proto.CompactTextString(m) }
 func (*Speed) ProtoMessage()               {}
-func (*Speed) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (*Speed) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
 func (m *Speed) GetL() int32 {
 	if m != nil {
@@ -64,113 +95,22 @@ func (m *Speed) GetStopAfter() uint32 {
 	return 0
 }
 
-type Command struct {
-	Speed *Speed `protobuf:"bytes,1,opt,name=Speed" json:"Speed,omitempty"`
-	Look  int32  `protobuf:"zigzag32,2,opt,name=Look" json:"Look,omitempty"`
-}
-
-func (m *Command) Reset()                    { *m = Command{} }
-func (m *Command) String() string            { return proto.CompactTextString(m) }
-func (*Command) ProtoMessage()               {}
-func (*Command) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
-
-func (m *Command) GetSpeed() *Speed {
-	if m != nil {
-		return m.Speed
-	}
-	return nil
-}
-
-func (m *Command) GetLook() int32 {
-	if m != nil {
-		return m.Look
-	}
-	return 0
-}
-
-type Sonar struct {
-	Distance  uint32 `protobuf:"varint,1,opt,name=Distance" json:"Distance,omitempty"`
-	Direction int32  `protobuf:"zigzag32,2,opt,name=Direction" json:"Direction,omitempty"`
-}
-
-func (m *Sonar) Reset()                    { *m = Sonar{} }
-func (m *Sonar) String() string            { return proto.CompactTextString(m) }
-func (*Sonar) ProtoMessage()               {}
-func (*Sonar) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
-
-func (m *Sonar) GetDistance() uint32 {
-	if m != nil {
-		return m.Distance
-	}
-	return 0
-}
-
-func (m *Sonar) GetDirection() int32 {
-	if m != nil {
-		return m.Direction
-	}
-	return 0
-}
-
-type Sensor struct {
-	R bool `protobuf:"varint,1,opt,name=R" json:"R,omitempty"`
-	C bool `protobuf:"varint,2,opt,name=C" json:"C,omitempty"`
-	L bool `protobuf:"varint,3,opt,name=L" json:"L,omitempty"`
-}
-
-func (m *Sensor) Reset()                    { *m = Sensor{} }
-func (m *Sensor) String() string            { return proto.CompactTextString(m) }
-func (*Sensor) ProtoMessage()               {}
-func (*Sensor) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
-
-func (m *Sensor) GetR() bool {
-	if m != nil {
-		return m.R
-	}
-	return false
-}
-
-func (m *Sensor) GetC() bool {
-	if m != nil {
-		return m.C
-	}
-	return false
-}
-
-func (m *Sensor) GetL() bool {
-	if m != nil {
-		return m.L
-	}
-	return false
-}
-
-type Remote struct {
-	Key uint32 `protobuf:"varint,1,opt,name=Key" json:"Key,omitempty"`
-}
-
-func (m *Remote) Reset()                    { *m = Remote{} }
-func (m *Remote) String() string            { return proto.CompactTextString(m) }
-func (*Remote) ProtoMessage()               {}
-func (*Remote) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
-
-func (m *Remote) GetKey() uint32 {
-	if m != nil {
-		return m.Key
-	}
-	return 0
-}
-
+// Event recieved from car
 type Event struct {
-	TimeStamp uint32  `protobuf:"varint,1,opt,name=TimeStamp" json:"TimeStamp,omitempty"`
-	Head      *Sonar  `protobuf:"bytes,2,opt,name=Head" json:"Head,omitempty"`
-	Sensor    *Sensor `protobuf:"bytes,3,opt,name=Sensor" json:"Sensor,omitempty"`
-	Remote    *Remote `protobuf:"bytes,4,opt,name=Remote" json:"Remote,omitempty"`
+	// TimeStamp in milliseconds
+	TimeStamp uint32 `protobuf:"varint,1,opt,name=TimeStamp" json:"TimeStamp,omitempty"`
+	// Sonar sensor head
+	Head *Sonar `protobuf:"bytes,2,opt,name=Head" json:"Head,omitempty"`
+	// Infrared sensors
+	Sensor *Sensor `protobuf:"bytes,3,opt,name=Sensor" json:"Sensor,omitempty"`
+	// Remote control
+	Remote *Remote `protobuf:"bytes,4,opt,name=Remote" json:"Remote,omitempty"`
 }
 
 func (m *Event) Reset()                    { *m = Event{} }
 func (m *Event) String() string            { return proto.CompactTextString(m) }
 func (*Event) ProtoMessage()               {}
-func (*Event) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+func (*Event) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
 func (m *Event) GetTimeStamp() uint32 {
 	if m != nil {
@@ -200,36 +140,112 @@ func (m *Event) GetRemote() *Remote {
 	return nil
 }
 
+// Sonar event
+type Sonar struct {
+	// Distance in centimeter
+	Distance uint32 `protobuf:"varint,1,opt,name=Distance" json:"Distance,omitempty"`
+	// Head Direction in degree
+	Direction int32 `protobuf:"zigzag32,2,opt,name=Direction" json:"Direction,omitempty"`
+}
+
+func (m *Sonar) Reset()                    { *m = Sonar{} }
+func (m *Sonar) String() string            { return proto.CompactTextString(m) }
+func (*Sonar) ProtoMessage()               {}
+func (*Sonar) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+func (m *Sonar) GetDistance() uint32 {
+	if m != nil {
+		return m.Distance
+	}
+	return 0
+}
+
+func (m *Sonar) GetDirection() int32 {
+	if m != nil {
+		return m.Direction
+	}
+	return 0
+}
+
+// Infrared sensors event
+type Sensor struct {
+	R bool `protobuf:"varint,1,opt,name=R" json:"R,omitempty"`
+	C bool `protobuf:"varint,2,opt,name=C" json:"C,omitempty"`
+	L bool `protobuf:"varint,3,opt,name=L" json:"L,omitempty"`
+}
+
+func (m *Sensor) Reset()                    { *m = Sensor{} }
+func (m *Sensor) String() string            { return proto.CompactTextString(m) }
+func (*Sensor) ProtoMessage()               {}
+func (*Sensor) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+
+func (m *Sensor) GetR() bool {
+	if m != nil {
+		return m.R
+	}
+	return false
+}
+
+func (m *Sensor) GetC() bool {
+	if m != nil {
+		return m.C
+	}
+	return false
+}
+
+func (m *Sensor) GetL() bool {
+	if m != nil {
+		return m.L
+	}
+	return false
+}
+
+// Remote control event
+type Remote struct {
+	Key uint32 `protobuf:"varint,1,opt,name=Key" json:"Key,omitempty"`
+}
+
+func (m *Remote) Reset()                    { *m = Remote{} }
+func (m *Remote) String() string            { return proto.CompactTextString(m) }
+func (*Remote) ProtoMessage()               {}
+func (*Remote) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+
+func (m *Remote) GetKey() uint32 {
+	if m != nil {
+		return m.Key
+	}
+	return 0
+}
+
 func init() {
-	proto.RegisterType((*Speed)(nil), "elegoo.Speed")
 	proto.RegisterType((*Command)(nil), "elegoo.Command")
+	proto.RegisterType((*Speed)(nil), "elegoo.Speed")
+	proto.RegisterType((*Event)(nil), "elegoo.Event")
 	proto.RegisterType((*Sonar)(nil), "elegoo.Sonar")
 	proto.RegisterType((*Sensor)(nil), "elegoo.Sensor")
 	proto.RegisterType((*Remote)(nil), "elegoo.Remote")
-	proto.RegisterType((*Event)(nil), "elegoo.Event")
 }
 
 func init() { proto.RegisterFile("elegoo.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 290 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x51, 0xc1, 0x4a, 0xc3, 0x40,
-	0x10, 0x65, 0x6d, 0x1b, 0xe3, 0x34, 0x11, 0xdd, 0x53, 0x28, 0x1e, 0x6a, 0x84, 0xd2, 0x53, 0x0f,
-	0xf1, 0x0b, 0xda, 0x54, 0x10, 0xcc, 0x69, 0xe3, 0xc9, 0x5b, 0x6c, 0x46, 0x09, 0x9a, 0x9d, 0x90,
-	0x2e, 0x82, 0x7f, 0xe2, 0xe7, 0xca, 0xce, 0x6e, 0x1a, 0xbd, 0xed, 0x7b, 0xfb, 0xe6, 0xbd, 0x37,
-	0x0c, 0x44, 0xf8, 0x89, 0xef, 0x44, 0x9b, 0xae, 0x27, 0x43, 0x32, 0x70, 0x28, 0xdd, 0xc2, 0xac,
-	0xec, 0x10, 0x6b, 0x19, 0x81, 0x28, 0x12, 0xb1, 0x14, 0xeb, 0x6b, 0x25, 0x0a, 0x8b, 0x54, 0x72,
-	0xe6, 0x90, 0x92, 0x37, 0x70, 0x51, 0x1a, 0xea, 0xb6, 0x6f, 0x06, 0xfb, 0x64, 0xb2, 0x14, 0xeb,
-	0x58, 0x8d, 0x44, 0xba, 0x83, 0xf3, 0x9c, 0xda, 0xb6, 0xd2, 0xb5, 0xbc, 0xf3, 0x6e, 0x6c, 0x34,
-	0xcf, 0xe2, 0x8d, 0xcf, 0x64, 0x52, 0xf9, 0x24, 0x09, 0xd3, 0x82, 0xe8, 0xc3, 0xdb, 0xf3, 0x9b,
-	0x6b, 0x90, 0xae, 0x7a, 0xb9, 0x80, 0x70, 0xdf, 0x1c, 0x4d, 0xa5, 0x0f, 0xc8, 0x26, 0xb1, 0x3a,
-	0x61, 0x5b, 0x63, 0xdf, 0xf4, 0x78, 0x30, 0x0d, 0x69, 0x3f, 0x3d, 0x12, 0x69, 0x06, 0x41, 0x89,
-	0xfa, 0x48, 0xbd, 0x2b, 0x6f, 0x87, 0x43, 0x5b, 0x3e, 0x02, 0x91, 0xb3, 0x3a, 0x54, 0x22, 0x77,
-	0x6b, 0x4e, 0x1c, 0x2a, 0xd2, 0x05, 0x04, 0x0a, 0x5b, 0x32, 0x28, 0xaf, 0x60, 0xf2, 0x84, 0xdf,
-	0x3e, 0xd2, 0x3e, 0xd3, 0x1f, 0x01, 0xb3, 0x87, 0x2f, 0xd4, 0xc6, 0xe6, 0x3e, 0x37, 0x2d, 0x96,
-	0xa6, 0x6a, 0x3b, 0xaf, 0x18, 0x09, 0x79, 0x0b, 0xd3, 0x47, 0xac, 0x6a, 0x8e, 0xf8, 0xbb, 0xb2,
-	0x5d, 0x47, 0xf1, 0x97, 0x5c, 0x0d, 0xd5, 0x38, 0x79, 0x9e, 0x5d, 0x9e, 0x44, 0xcc, 0xaa, 0xa1,
-	0xf8, 0x6a, 0xa8, 0x93, 0x4c, 0xff, 0xeb, 0x1c, 0xab, 0xfc, 0xef, 0x2e, 0x7c, 0xf1, 0xe7, 0x7b,
-	0x0d, 0xf8, 0x9a, 0xf7, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x8b, 0x39, 0xb6, 0xd8, 0xdd, 0x01,
-	0x00, 0x00,
+	// 285 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x51, 0xcd, 0x4e, 0x83, 0x40,
+	0x10, 0xce, 0xda, 0x16, 0x71, 0x0a, 0xc6, 0xee, 0x89, 0x34, 0x1e, 0x10, 0x13, 0xc3, 0xa9, 0x07,
+	0x7c, 0x82, 0x4a, 0x4d, 0x4c, 0xe4, 0x34, 0xf8, 0x02, 0x58, 0x46, 0x43, 0x94, 0x1d, 0x42, 0x37,
+	0x26, 0xbe, 0x89, 0x8f, 0x6b, 0xf6, 0xa7, 0x45, 0x6f, 0xfb, 0xfd, 0xcd, 0x7e, 0x3b, 0x0b, 0x11,
+	0x7d, 0xd2, 0x3b, 0xf3, 0x66, 0x18, 0x59, 0xb3, 0x0c, 0x1c, 0xca, 0x1e, 0xe0, 0xbc, 0xe4, 0xbe,
+	0x6f, 0x54, 0x2b, 0x6f, 0x61, 0x51, 0x0f, 0x44, 0x6d, 0x22, 0x52, 0x91, 0x2f, 0x8b, 0x78, 0xe3,
+	0x03, 0x96, 0x44, 0xa7, 0x49, 0x09, 0xf3, 0x8a, 0xf9, 0x23, 0x39, 0x4b, 0x45, 0xbe, 0x42, 0x7b,
+	0xce, 0xb6, 0x3e, 0x28, 0x23, 0x10, 0x95, 0x4d, 0xaf, 0x50, 0x54, 0x06, 0xa1, 0xf7, 0x09, 0x94,
+	0xd7, 0x70, 0x51, 0x6b, 0x1e, 0xb6, 0x6f, 0x9a, 0xc6, 0x64, 0x96, 0x8a, 0x3c, 0xc6, 0x89, 0xc8,
+	0x7e, 0x04, 0x2c, 0x1e, 0xbf, 0x48, 0x69, 0xe3, 0x7b, 0xe9, 0x7a, 0xaa, 0x75, 0xd3, 0x0f, 0x76,
+	0x56, 0x8c, 0x13, 0x21, 0x6f, 0x60, 0xfe, 0x44, 0x4d, 0x6b, 0xc7, 0xfe, 0xad, 0xc8, 0xaa, 0x19,
+	0xd1, 0x4a, 0xf2, 0x0e, 0x82, 0x9a, 0xd4, 0x81, 0xdd, 0x2d, 0xcb, 0xe2, 0xf2, 0x64, 0xb2, 0x2c,
+	0x7a, 0xd5, 0xf8, 0x90, 0x7a, 0xd6, 0x94, 0xcc, 0xff, 0xfb, 0x1c, 0x8b, 0x5e, 0xb5, 0xaf, 0x33,
+	0xe3, 0xe5, 0x1a, 0xc2, 0x5d, 0x77, 0xd0, 0x8d, 0xda, 0x93, 0x2f, 0x76, 0xc2, 0xa6, 0xf5, 0xae,
+	0x1b, 0x69, 0xaf, 0x3b, 0x56, 0xfe, 0xcd, 0x13, 0x91, 0x15, 0xc7, 0x4a, 0x6e, 0x27, 0x26, 0x1c,
+	0x9a, 0x9d, 0x44, 0x20, 0x4a, 0xeb, 0x0e, 0x51, 0x94, 0x6e, 0x7b, 0x33, 0x87, 0xaa, 0x6c, 0x7d,
+	0xac, 0x27, 0xaf, 0x60, 0xf6, 0x4c, 0xdf, 0xfe, 0x4a, 0x73, 0x7c, 0x0d, 0xec, 0x1f, 0xde, 0xff,
+	0x06, 0x00, 0x00, 0xff, 0xff, 0xd4, 0x2f, 0xd0, 0xa2, 0xd3, 0x01, 0x00, 0x00,
 }

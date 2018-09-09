@@ -2,37 +2,52 @@ syntax = "proto3";
 
 package elegoo;
 
-option go_package = "elegoo";
-
-message Speed {
-	sint32 L = 1;		// -255 .. + 255
-	sint32 R = 2;		// -255 .. + 255
-	uint32 StopAfter = 3;	// milliseconds
-}
-
+// Command send to car
 message Command {
+	// Set speed
 	Speed Speed = 1;
-	sint32 Look = 2;	// deg: -90 right .. +90 left
+	// Rotate sonar head degree: -90 right .. +90 left
+	sint32 Look = 2;
 }
 
+// Speed command
+message Speed {
+	// Left motor speed: -255 .. +255
+	sint32 L = 1;
+	// Right motor speed: -255 .. +255
+	sint32 R = 2;
+	// Stop after milliseconds, ignored if set to 0
+	uint32 StopAfter = 3;
+}
+
+// Event recieved from car
+message Event {
+	// TimeStamp in milliseconds
+	uint32 TimeStamp = 1;
+	// Sonar sensor head
+	Sonar Head = 2;
+	// Infrared sensors
+	Sensor Sensor = 3;
+	// Remote control
+	Remote Remote = 4;
+}
+
+// Sonar event
 message Sonar {
-	uint32 Distance = 1;	// cm
-	sint32 Direction = 2;	// deg
+	// Distance in centimeter
+	uint32 Distance = 1;
+	// Head Direction in degree
+	sint32 Direction = 2;
 }
 
+// Infrared sensors event
 message Sensor {
 	bool R = 1;
 	bool C = 2;
 	bool L = 3;
 }
 
+// Remote control event
 message Remote {
 	uint32 Key = 1;
-}
-
-message Event {
-	uint32 TimeStamp = 1;	// milliseconds
-	Sonar Head = 2;
-	Sensor Sensor = 3;
-	Remote Remote = 4;
 }

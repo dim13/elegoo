@@ -24,9 +24,9 @@ func NewComm(rw io.ReadWriter) Comm {
 	return Comm{w: bufio.NewWriter(rw), r: bufio.NewReader(rw)}
 }
 
-func (c Comm) Send(pb proto.Message) error {
+func (c Comm) Send(msg proto.Message) error {
 	buf := proto.NewBuffer(nil)
-	if err := buf.EncodeMessage(pb); err != nil {
+	if err := buf.EncodeMessage(msg); err != nil {
 		return err
 	}
 	if _, err := c.w.Write(cobs.Encode(buf.Bytes())); err != nil {
@@ -35,11 +35,11 @@ func (c Comm) Send(pb proto.Message) error {
 	return c.w.Flush()
 }
 
-func (c Comm) Recv(pb proto.Message) error {
+func (c Comm) Recv(msg proto.Message) error {
 	block, err := c.r.ReadBytes(0)
 	if err != nil {
 		return err
 	}
 	buf := proto.NewBuffer(cobs.Decode(block))
-	return buf.DecodeMessage(pb)
+	return buf.DecodeMessage(msg)
 }

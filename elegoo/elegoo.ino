@@ -94,7 +94,7 @@ void loop() {
 }
 
 void setup() {
-  serial.begin(57600);
+  serial.begin(38400);
   serial.setPacketHandler(&onPacket);
 
   pinMode(Echo, INPUT);

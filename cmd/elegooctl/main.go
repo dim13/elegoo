@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	conf := &serial.Config{Name: "/dev/tty.Elegoo-DevB", Baud: 57600}
+	conf := &serial.Config{Name: "/dev/tty.Elegoo-DevB", Baud: 38400}
 	s, err := serial.OpenPort(conf)
 	if err != nil {
 		log.Fatal(err)

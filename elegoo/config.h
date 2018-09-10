@@ -1,35 +1,35 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define LED  13 // LED_BUILDIN 			PB5
+#define LED  13 // LED_BUILDIN 			PB5 Out
 
 // Settings
 #define dist  20
 #define velo 130
 
 // Pinout motor
-#define ENA  5 // 10 pwm enable right		PD5
-#define ENB  6 //  5 pwm enable left		PD6
+#define ENA  5 // 10 pwm enable right		PD5 Out PWM
+#define ENB  6 //  5 pwm enable left		PD6 Out PWM
 
-#define IN1  7 //  9 direction backward right	PD7
-#define IN2  8 //  8 direction forward  right	PB0
-#define IN3  9 //  7 direction backward left	PB1
-#define IN4 10 //  6 direction forward  left	PB2
+#define IN1  7 //  9 direction backward right	PD7 Out
+#define IN2  8 //  8 direction forward  right	PB0 Out
+#define IN3  9 //  7 direction backward left	PB1 Out
+#define IN4 10 //  6 direction forward  left	PB2 Out
 
 // Pinout sensors
-#define SR  2 // right				PD2
-#define SC  4 // center				PD4
-#define SL 11 // left				PB3
+#define SR  2 // right				PD2 In
+#define SC  4 // center				PD4 In
+#define SL 11 // left				PB3 In
 
 // Servo
-#define SRV 3 //				PD3
+#define SRV 3 //				PD3 Out PWM
 
 // Pinout IR
-#define IR 12 //				PB4
+#define IR 12 //				PB4 In
 
 // Pinout Ultrasonic
-#define Echo A1 //				PC1
-#define Trig A0 //				PC0
+#define Echo A1 //				PC1 In
+#define Trig A0 //				PC0 Out
 
 #define ToCM     58
 #define ToInch  148

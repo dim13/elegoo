@@ -1,30 +1,30 @@
-pin	atmega328p			arduino			elegoo
+pin	atmega328p			arduino			elegoo				direction
 
 1	PC6 (PCINT14/RESET)		reset			n/a
 2	PD0 (PCINT16/RXD)		digital pin 0 (RX)	n/a
 3	PD1 (PCINT17/TXD)		digital pin 1 (TX)	n/a
-4	PD2 (PCINT18/INT0)		digital pin 2		ground sensor right
-5	PD3 (PCINT19/OC2B/INT1)		digital pin 3 (PWM)	ground sensor center
-6	PD4 (PCINT20/XCK/T0)		digital pin 4		ground sensor left
+4	PD2 (PCINT18/INT0)		digital pin 2		ground sensor right		in
+5	PD3 (PCINT19/OC2B/INT1)		digital pin 3 (PWM)	ground sensor center		in
+6	PD4 (PCINT20/XCK/T0)		digital pin 4		ground sensor left		in
 7	VCC				VCC			n/a
 8	GND				GND			n/a
 9	PB6 (PCINT6/XTAL1/TOSC1)	crystal			n/a
 10	PB7 (PCINT7/XTAL2/TOSC2)	crystal			n/a
-11	PD5 (PCINT21/OC0B/T1)		digital pin 5 (PWM)	motor analog enable right
-12	PD6 (PCINT22/OC0A/AIN0)		digital pin 6 (PWM)	motor analog enable left
-13	PD7 (PCINT23/AIN1)		digital pin 7		direction backward right
-14	PB0 (PCINT0/CLKO/ICP1)		digital pin 8		direction forward right
+11	PD5 (PCINT21/OC0B/T1)		digital pin 5 (PWM)	motor enable right		out pwm
+12	PD6 (PCINT22/OC0A/AIN0)		digital pin 6 (PWM)	motor enable left		out pwm
+13	PD7 (PCINT23/AIN1)		digital pin 7		direction backward right	out
+14	PB0 (PCINT0/CLKO/ICP1)		digital pin 8		direction forward right		out
 
-15	PB1 (OC1A/PCINT1)		digital pin 9 (PWM)	direction backward left
-16	PB2 (SS/OC1B/PCINT2)		digital pin 10 (PWM)	direction forward left
-17	PB3 (MOSI/OC2A/PCINT3)		digital pin 11 (PWM)	ultrasonic servo pwm
-18	PB4 (MISO/PCINT4)		digital pin 12		infrared receiver
+15	PB1 (OC1A/PCINT1)		digital pin 9 (PWM)	direction backward left		out
+16	PB2 (SS/OC1B/PCINT2)		digital pin 10 (PWM)	direction forward left		out
+17	PB3 (MOSI/OC2A/PCINT3)		digital pin 11 (PWM)	ultrasonic servo		out pwm
+18	PB4 (MISO/PCINT4)		digital pin 12		infrared receiver		in
 19	PB5 (SCK/PCINT5)		digital pin 13 (LED)	n/a
 20	AVCC				VCC			n/a
 21	AREF				analog reference	n/a
 22	GND				GND			n/a
-23	PC0 (ADC0/PCINT8)		analog input 0		ultrasonic trigger output
-24	PC1 (ADC1/PCINT9)		analog input 1		ultrasonic echo input
+23	PC0 (ADC0/PCINT8)		analog input 0		ultrasonic trigger		out
+24	PC1 (ADC1/PCINT9)		analog input 1		ultrasonic echo			in
 25	PC2 (ADC2/PCINT10)		analog input 2		free
 26	PC3 (ADC3/PCINT11)		analog input 3		free
 27	PC4 (ADC4/SDA/PCINT12)		analog input 4		free

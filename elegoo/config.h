@@ -8,8 +8,8 @@
 #define velo 130
 
 // Pinout motor
-#define ENA  5 // 10 pwm enable right		PD5 Out PWM
-#define ENB  6 //  5 pwm enable left		PD6 Out PWM
+#define ENA  5 // 10 pwm enable right		PD5 Out PWM OC0B
+#define ENB  6 //  5 pwm enable left		PD6 Out PWM OC0A
 
 #define IN1  7 //  9 direction backward right	PD7 Out
 #define IN2  8 //  8 direction forward  right	PB0 Out
@@ -18,11 +18,11 @@
 
 // Pinout sensors
 #define SR  2 // right				PD2 In
-#define SC  4 // center				PD4 In
-#define SL 11 // left				PB3 In
+#define SC  3 // center				PD3 In
+#define SL  4 // left				PD4 In
 
 // Servo
-#define SRV 3 //				PD3 Out PWM
+#define SRV 11 //				PB3 Out PWM OC2A
 
 // Pinout IR
 #define IR 12 //				PB4 In

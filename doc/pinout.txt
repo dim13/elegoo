@@ -1,15 +1,15 @@
 pin	atmega328p			arduino			elegoo
 
-1	PC6 (PCINT14/RESET)		reset			-
-2	PD0 (PCINT16/RXD)		digital pin 0 (RX)	-
-3	PD1 (PCINT17/TXD)		digital pin 1 (TX)	-
+1	PC6 (PCINT14/RESET)		reset			n/a
+2	PD0 (PCINT16/RXD)		digital pin 0 (RX)	n/a
+3	PD1 (PCINT17/TXD)		digital pin 1 (TX)	n/a
 4	PD2 (PCINT18/INT0)		digital pin 2		ground sensor right
 5	PD3 (PCINT19/OC2B/INT1)		digital pin 3 (PWM)	ground sensor center
 6	PD4 (PCINT20/XCK/T0)		digital pin 4		ground sensor left
-7	VCC				VCC			-
-8	GND				GND			-
-9	PB6 (PCINT6/XTAL1/TOSC1)	crystal			-
-10	PB7 (PCINT7/XTAL2/TOSC2)	crystal			-
+7	VCC				VCC			n/a
+8	GND				GND			n/a
+9	PB6 (PCINT6/XTAL1/TOSC1)	crystal			n/a
+10	PB7 (PCINT7/XTAL2/TOSC2)	crystal			n/a
 11	PD5 (PCINT21/OC0B/T1)		digital pin 5 (PWM)	motor analog enable right
 12	PD6 (PCINT22/OC0A/AIN0)		digital pin 6 (PWM)	motor analog enable left
 13	PD7 (PCINT23/AIN1)		digital pin 7		direction backward right
@@ -19,10 +19,10 @@ pin	atmega328p			arduino			elegoo
 16	PB2 (SS/OC1B/PCINT2)		digital pin 10 (PWM)	direction forward left
 17	PB3 (MOSI/OC2A/PCINT3)		digital pin 11 (PWM)	ultrasonic servo pwm
 18	PB4 (MISO/PCINT4)		digital pin 12		infrared receiver
-19	PB5 (SCK/PCINT5)		digital pin 13 (LED)	-
-20	AVCC				VCC
-21	AREF				analog reference
-22	GND				GND
+19	PB5 (SCK/PCINT5)		digital pin 13 (LED)	n/a
+20	AVCC				VCC			n/a
+21	AREF				analog reference	n/a
+22	GND				GND			n/a
 23	PC0 (ADC0/PCINT8)		analog input 0		ultrasonic trigger output
 24	PC1 (ADC1/PCINT9)		analog input 1		ultrasonic echo input
 25	PC2 (ADC2/PCINT10)		analog input 2		free

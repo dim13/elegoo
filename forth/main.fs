@@ -27,5 +27,8 @@ $2b constant portd
 #3 bv pind 2constant sl
 #3 bv ddd mclr
 
+-main
+marker -main
+
 : read ( mask port -- flag )
-  c@ invert 0= swap drop ;
+  c@ invert and 0= nip ;

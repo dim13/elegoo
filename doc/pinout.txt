@@ -17,7 +17,7 @@ pin	atmega328p			arduino			elegoo				direction
 
 15	PB1 (OC1A/PCINT1)		digital pin 9 (PWM)	direction backward left		out
 16	PB2 (SS/OC1B/PCINT2)		digital pin 10 (PWM)	direction forward left		out
-17	PB3 (MOSI/OC2A/PCINT3)		digital pin 11 (PWM)	ultrasonic servo		out pwm
+17	PB3 (MOSI/OC2A/PCINT3)		digital pin 11 (PWM)	ultrasonic servo		out ppm
 18	PB4 (MISO/PCINT4)		digital pin 12		infrared receiver		in
 19	PB5 (SCK/PCINT5)		digital pin 13 (LED)	n/a
 20	AVCC				VCC			n/a

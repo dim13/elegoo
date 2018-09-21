@@ -427,24 +427,5 @@ $2b constant PORTD		\ Port D Data Register
 $2a constant DDRD		\ Port D Data Direction Register
 $29 constant PIND		\ Port D Input Pins
 
-\ TIMER_COUNTER_0
-$48 constant OCR0B		\ Timer/Counter0 Output Compare Register
-$47 constant OCR0A		\ Timer/Counter0 Output Compare Register
-$46 constant TCNT0		\ Timer/Counter0
-$45 constant TCCR0B		\ Timer/Counter Control Register B
-$44 constant TCCR0A		\ Timer/Counter  Control Register A
-$6e constant TIMSK0		\ Timer/Counter0 Interrupt Mask Register
-$35 constant TIFR0		\ Timer/Counter0 Interrupt Flag register
-
-\ EXTERNAL_INTERRUPT
-$69 constant EICRA		\ External Interrupt Control Register
-$3d constant EIMSK		\ External Interrupt Mask Register
-$3c constant EIFR		\ External Interrupt Flag Register
-$68 constant PCICR		\ Pin Change Interrupt Control Register
-$6d constant PCMSK2		\ Pin Change Mask Register 0x2
-$6c constant PCMSK1		\ Pin Change Mask Register 0x1
-$6b constant PCMSK0		\ Pin Change Mask Register 0x0
-$3b constant PCIFR		\ Pin Change Interrupt Flag Register
-
 -main
 marker -main

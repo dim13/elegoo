@@ -62,11 +62,10 @@ set ::dataBits 8; # 7 8
 set ::stopBits 1; # 1 2
 set ::parityAndBits "$::parity,$::dataBits,$::stopBits"
 set ::handShake xonxoff; # none xonxoff rtscts
-if { [string equal $::tcl_platform(platform) windows] } {
-    console show
-    set ::serialPortName {\\.\com5}
-} else {
+if { [string equal $::tcl_platform(os) Linux] } {
     set ::serialPortName "/dev/ttyACM0"
+} else {
+    set ::serialPortName "/dev/cuaU0"
 }; # end if
 set ::portState closed
 
@@ -131,9 +130,6 @@ proc openSerialPort {} {
 	chan configure $::tty -mode $::baudRate,$::parityAndBits -timeout 10 \
 	    -encoding binary -translation binary -handshake $::handShake \
 	    -buffering none -buffersize 8192 -blocking false
-	if { [string equal $::tcl_platform(platform) windows] } {
-	    chan configure $::tty -sysbuffer 8192
-	}
 	chan event $::tty readable [list serialIn $::tty]
 	set ::portState open
     }

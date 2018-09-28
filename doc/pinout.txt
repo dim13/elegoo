@@ -10,13 +10,13 @@ pin	atmega328p			arduino			elegoo				direction
  8	GND				GND			n/a
  9	PB6 (PCINT6/XTAL1/TOSC1)	crystal			n/a
 10	PB7 (PCINT7/XTAL2/TOSC2)	crystal			n/a
-11	PD5 (PCINT21/OC0B/T1)		digital pin  5 (PWM)	motor enable right		out pwm
-12	PD6 (PCINT22/OC0A/AIN0)		digital pin  6 (PWM)	motor enable left		out pwm
-13	PD7 (PCINT23/AIN1)		digital pin  7		direction backward right	out
-14	PB0 (PCINT0/CLKO/ICP1)		digital pin  8		direction forward right		out
+11	PD5 (PCINT21/OC0B/T1)		digital pin  5 (PWM)	motor enable right		out pwm		green
+12	PD6 (PCINT22/OC0A/AIN0)		digital pin  6 (PWM)	motor enable left		out pwm		black
+13	PD7 (PCINT23/AIN1)		digital pin  7		direction backward right	out		blue
+14	PB0 (PCINT0/CLKO/ICP1)		digital pin  8		direction forward right		out		lila
 
-15	PB1 (OC1A/PCINT1)		digital pin  9 (PWM)	direction backward left		out
-16	PB2 (SS/OC1B/PCINT2)		digital pin 10 (PWM)	direction forward left		out
+15	PB1 (OC1A/PCINT1)		digital pin  9 (PWM)	direction backward left		out		gray
+16	PB2 (SS/OC1B/PCINT2)		digital pin 10 (PWM)	direction forward left		out		white
 17	PB3 (MOSI/OC2A/PCINT3)		digital pin 11 (PWM)	ultrasonic servo		out ppm
 18	PB4 (MISO/PCINT4)		digital pin 12		infrared receiver		in
 19	PB5 (SCK/PCINT5)		digital pin 13 (LED)	n/a
@@ -32,19 +32,19 @@ pin	atmega328p			arduino			elegoo				direction
 
 
 
-# alternative setup
+# new setup
 
  4	PD2 (PCINT18/INT0)		digital pin  2		infrared receiver		in
- 5	PD3 (PCINT19/OC2B/INT1)		digital pin  3 (PWM)	motor enable right		out pwm 8-bit
- 6	PD4 (PCINT20/XCK/T0)		digital pin  4		direction forward left		out
-11	PD5 (PCINT21/OC0B/T1)		digital pin  5 (PWM)	direction forward right		out
-12	PD6 (PCINT22/OC0A/AIN0)		digital pin  6 (PWM)	direction backward left		out
-13	PD7 (PCINT23/AIN1)		digital pin  7		direction backward right	out
+ 5	PD3 (PCINT19/OC2B/INT1)		digital pin  3 (PWM)	motor enable right		out pwm 8-bit	green
+ 6	PD4 (PCINT20/XCK/T0)		digital pin  4		direction forward left		out		white
+11	PD5 (PCINT21/OC0B/T1)		digital pin  5 (PWM)	direction forward right		out		lila
+12	PD6 (PCINT22/OC0A/AIN0)		digital pin  6 (PWM)	direction backward left		out		gray
+13	PD7 (PCINT23/AIN1)		digital pin  7		direction backward right	out		blue
 14	PB0 (PCINT0/CLKO/ICP1)		digital pin  8		ground sensor left		in
 15	PB1 (OC1A/PCINT1)		digital pin  9 (PWM)	ultrasonic servo		out ppm 16-bit
 16	PB2 (SS/OC1B/PCINT2)		digital pin 10 (PWM)	ground sensor center		in
-17	PB3 (MOSI/OC2A/PCINT3)		digital pin 11 (PWM)	motor enable left		out pwm 8-bit
-18	PB4 (MISO/PCINT4)		digital pin 12		ground sensor left		in
+17	PB3 (MOSI/OC2A/PCINT3)		digital pin 11 (PWM)	motor enable left		out pwm 8-bit	black
+18	PB4 (MISO/PCINT4)		digital pin 12		ground sensor right		in
 23	PC0 (ADC0/PCINT8)		analog input 0		ultrasonic trigger		out
 24	PC1 (ADC1/PCINT9)		analog input 1		ultrasonic echo			in
 25	PC2 (ADC2/PCINT10)		analog input 2		free

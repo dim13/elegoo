@@ -1,3 +1,10 @@
+-init
+marker -init
+
+: init ( -- )
+  idle
+  load+ ;
+
 -pwm
 marker -pwm
 

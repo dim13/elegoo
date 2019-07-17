@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"dim13.org/elegoo"
+	"github.com/dim13/elegoo"
 	"github.com/tarm/serial"
 )
 

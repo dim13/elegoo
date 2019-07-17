@@ -1,4 +1,4 @@
-module dim13.org/elegoo
+module github.com/dim13/elegoo
 
 require (
 	github.com/dim13/cobs v0.2.0

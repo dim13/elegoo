@@ -54,15 +54,15 @@
 .equ TURNKEY_DELAY = 2000  ; milliseconds
 
 ; UART buffer sizes
-.equ RX0_BUF_SIZE = 32  ; 8,16,32,64
+.equ RX0_BUF_SIZE = 64  ; 8,16,32,64
 .equ RX0_OFF_FILL = 4   ; Fill level for XOFF
 
 .equ RX1_BUF_SIZE = 32  ; 8,16,32,64
 .equ RX1_OFF_FILL = 4   ; Fill level for XOFF
 
 ;;; USER AREA sizes for the OPERATOR task
-.equ RETURN_STACK_SIZE = 64          ; 48 cells return stack
-.equ PARAMETER_STACK_SIZE = 96       ; 32 cells parameter stack
+.equ RETURN_STACK_SIZE = 64          ; 32 cells return stack
+.equ PARAMETER_STACK_SIZE = 64       ; 32 cells parameter stack
 .equ TIB_SIZE = 90                   ; 80 chars tib size +  10 chars hold area
 
 ; Set to 1 to allow control-o to reset FlashForth from the operator UART

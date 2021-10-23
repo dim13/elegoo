@@ -1,7 +1,7 @@
 ;**********************************************************************
 ;                                                                     *
 ;    Filename:      FlashForth.asm                                    *
-;    Date:          13.01.2019                                        *
+;    Date:          18.11.2020                                        *
 ;    File Version:  5.0                                               *
 ;    MCU:           Atmega                                            *
 ;    Copyright:     Mikael Nordman                                    *
@@ -11,7 +11,7 @@
 ; FlashForth is a standalone Forth system for microcontrollers that
 ; can flash their own flash memory.
 ;
-; Copyright (C) 2019  Mikael Nordman
+; Copyright (C) 2020  Mikael Nordman
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License version 3 as 
@@ -32,174 +32,28 @@
 
 ; Include the FlashForth configuration file
 .include "config.inc"
+.include "macros.inc"
 
 ; Define the FF version date string
-#define DATE "13.01.2019"
-
-
-; Register definitions
-  .def upl = r2         ; not in interrupt 
-  .def uph = r3         ; not in interrupt
-  .def r_zero = r5      ; read only zero
-  .def r_one = r6       ; read only one
-  .def r_two = r7       ; read only two
-  .def t8 = r8          ; Not in interrupt
-  .def wflags  = r9     ; not in interrupt
-
-  .def loadreg0 = r4    ;
-  .def loadreg1 = r12
-  .def loadreg2 = r13
-
-
-  .def ibasel=r10       ; Not in interrupt
-  .def ibaseh=r11       ; Not in interrupt
-  .def ms_count  = r14  ; Not in interrupt
-  .def ms_count1 = r15  ; Not in interrupt
-  .def t0 = r16
-  .def t1 = r17
-  .def t2 = r0          ; Not in interrupt
-  .def t3 = r1          ; Not in interrupt
-
-  .def al = r18
-  .def ah = r19
-  .def pl = r20         ; P Register and FOR..LOOP INDEX variable
-  .def ph = r21
-
-  .def FLAGS1 = r22     ; Not in interrupt
-  .def FLAGS2 = r23     ; Not in interrupt
-  .def tosl = r24
-  .def tosh = r25
-;  xl = r26
-;  xh = r27
-;  yl = r28  ; StackPointer Ylo
-;  yh = r29  ; StackPointer Yhi
-;  zl = r30
-;  zh = r31
-  .def t4 = r26
-  .def t5 = r27
-  .def t6 = r30
-  .def t7 = r31
-
-; Macros
-.macro poptos 
-    ld tosl, Y+
-    ld tosh, Y+
-.endmacro
-
-.macro pushtos
-    st -Y, tosh
-    st -Y, tosl
-.endmacro
-
-.macro in_
-.if (@1 < $40)
-  in @0,@1
-.else
-  lds @0,@1
-.endif
-.endmacro
-
-.macro out_
-.if (@0 < $40)
-  out @0,@1
-.else
-  sts @0,@1
-.endif
-.endmacro
-
-.macro sbi_
-.if (@0 < $40)
-  sbi @0,@1
-.else
-  in_ @2,@0
-  ori @2,exp2(@1)
-  out_ @0,@2
-.endif
-.endmacro
-
-.macro cbi_
-.if (@0 < $40)
-  cbi @0,@1
-.else
-  in_ @2,@0
-  andi @2,~(exp2(@1))
-  out_ @0,@2
-.endif
-.endmacro
-
-.macro lpm_
-.if (FLASHEND < 0x8000) ; Word address
-        lpm @0,@1
-.else
-        elpm @0,@1
-.endif
-.endmacro
-
-.macro sub_pflash_z
-.if (PFLASH > 0)
-        subi    zh, high(PFLASH)
-.endif
-.endmacro
-
-.macro add_pflash_z
-.if (PFLASH > 0)
-        subi    zh, high(0x10000-PFLASH)
-.endif        
-.endmacro
-
-.macro sub_pflash_tos
-.if (PFLASH > 0)
-        subi    tosh, high(PFLASH)
-.endif
-.endmacro
-
-.macro add_pflash_tos
-.if (PFLASH > 0)
-        subi    tosh, high(0x10000-PFLASH)
-.endif        
-.endmacro
-
-.macro rampv_to_c
-.if (FLASHEND >= 0x8000)
-        bset    0
-.else
-        bclr    0
-.endif
-.endmacro
-
-.macro fdw
-  .dw ((@0<<1)+PFLASH)
-.endmacro
-
-.macro m_pop_zh
-.ifdef EIND
-        pop     zh
-.endif
-.endmacro
-.macro m_pop_xh
-.ifdef EIND
-        pop     xh
- .endif
-.endmacro
-.macro m_pop_t0
-.ifdef EIND
-        pop     t0
- .endif
-.endmacro
-.macro m_push_t0
-.ifdef EIND
-        push    t0
- .endif
-.endmacro
-.macro mijmp
-.ifdef EIND
-        eijmp
-.else
-        ijmp
-.endif
-.endmacro
+#define DATE "18.11.2020"
 
 ; Symbol naming compatilibity
+; UART1 symbols for Atmega32u4
+.if defined(XXU4)
+.equ UCSR0A=UCSR1A
+.equ UDR0_=UDR1
+.equ UCSR0B=UCSR1B
+.equ UCSR0C=UCSR1C
+.equ URXC0addr=URXC1addr
+.equ RXEN0=RXEN1
+.equ TXEN0=TXEN1
+.equ RXCIE0=RXCIE1
+.equ UCSZ00=UCSZ10
+.equ USBS0=USBS1
+.equ UBRR0H=UBRR1H
+.equ UBRR0L=UBRR1L
+.equ URSEL_=0x00
+.else
 ; UART0 symbols for Atmega32
 .ifndef UCSR0A
 .equ UCSR0A=UCSRA
@@ -217,6 +71,7 @@
 .else
 .equ UDR0_=UDR0
 .equ URSEL_=0
+.endif
 .endif
 
 .ifndef SPMCSR
@@ -244,6 +99,12 @@
 .equ OP_TX_=TX0_
 .equ OP_RX_=RX0_
 .equ OP_RXQ=RX0Q
+.else
+.if OPERATOR_UART == 3
+.equ OP_TX_=TXU_
+.equ OP_RX_=RXU_
+.equ OP_RXQ=RXUQ_
+.endif
 .endif
 .endif
 
@@ -329,6 +190,12 @@
 .equ BS_=0x08
 .equ TAB_=0x09
 
+.ifdef USBCON
+.equ USB_CODE = 0x1c0
+.else
+.equ USB_CODE = 0
+.endif
+
 ;;; Memory mapping prefixes
 .equ PRAM    = 0x0000                 ; 8 Kbytes of ram (atm2560)
 .equ PEEPROM = RAMEND+1               ; 4 Kbytes of eeprom (atm2560)
@@ -336,31 +203,32 @@
 .equ OFLASH  = PEEPROM+EEPROMEND+1    ; 52 Kbytes available for FlashForth(atm2560)
 .equ PFLASH  = 0
 .equ RAMPZV  = 3
-.equ KERNEL_SIZE=0x0d80
+.equ EIND__ = 1
+.equ KERNEL_SIZE=0x0d80 + USB_CODE
 .else
 .if (FLASHEND == 0xffff)              ; 64 Kwords flash
 .equ OFLASH  = PEEPROM+EEPROMEND+1    ; 56 Kbytes available for FlashForth(atm128)
 .equ PFLASH  = 0
 .equ RAMPZV  = 1
-.equ KERNEL_SIZE=0x0d00
+.equ KERNEL_SIZE=0x0d00 + USB_CODE
 .else
 .if (FLASHEND == 0x7fff)              ; 32 Kwords flash
 .equ OFLASH = PEEPROM+EEPROMEND+1     ; 56 Kbytes available for FlashForth
 .equ PFLASH = 0
 .equ RAMPZV  = 0
-.equ KERNEL_SIZE=0x0d00
+.equ KERNEL_SIZE=0x0d00 + USB_CODE
 .else
 .if (FLASHEND == 0x3fff)              ; 16 Kwords flash
 .equ OFLASH = 0x8000                  ; 32 Kbytes available for FlashForth
 .equ PFLASH = OFLASH
 .equ RAMPZV  = 0
-.equ KERNEL_SIZE=0x0c80
+.equ KERNEL_SIZE=0x0c80 + USB_CODE
 .else
 .if (FLASHEND == 0x1fff)              ; 8  Kwords flash
 .equ OFLASH = 0xC000                  ; 16 Kbytes available for FlashForth
 .equ PFLASH = OFLASH
 .equ RAMPZV  = 0
-.equ KERNEL_SIZE=0x0c80
+.equ KERNEL_SIZE=0x0c80 + USB_CODE
 .endif
 .endif
 .endif
@@ -371,8 +239,8 @@
 .equ KERNEL_START=BOOT_START - KERNEL_SIZE
 
 ;;;  High values for memory areas
-.equ FLASH_HI = 0xffff - (BOOT_SIZE*2) - (KERNEL_SIZE*2)
-.equ EEPROM_HI =PEEPROM + EEPROMEND
+.equ FLASH_HI = (0xffff - (BOOT_SIZE*2) - (KERNEL_SIZE*2))& 0xFF00
+.equ EEPROM_HI = PEEPROM + EEPROMEND
 .equ RAM_HI = RAMEND
         
 ;;; USER AREA for the OPERATOR task
@@ -393,7 +261,7 @@
 .equ uflg=         -11
 .equ usource=      -10         ; Two cells
 .equ utoin=        -6          ; Input stream
-.equ ulink=        -4          ; Task link
+.equ ulink=        -4          ; Task link (up0)
 .equ ursave=       -2          ; Saved ret stack pointer
 .equ uhp=           0          ; Hold pointer
 
@@ -410,6 +278,9 @@
 
 ;****************************************************
 .dseg
+.ifdef USBCON
+.org 0x110
+.endif
 ibuf:         .byte PAGESIZEB
 ivec:         .byte INT_VECTORS_SIZE
 
@@ -419,7 +290,7 @@ rbuf0_rd:    .byte 1
 rbuf0_lv:    .byte 1
 rbuf0:       .byte RX0_BUF_SIZE
 
-.ifdef UCSR1A
+.if UARTS == 2
 rxqueue1:
 rbuf1_wr:    .byte 1
 rbuf1_rd:    .byte 1
@@ -459,9 +330,6 @@ usbuf:      .byte   ussize
 utibbuf:    .byte   utibsize
 dpdata:     .byte   2
 
-.eseg
-.org 0
-        .dw 0xffff  ; Force first cell of eeprom to 0xffff
 ;*******************************************************************
 ; Start of kernel
 ;*******************************************************************
@@ -470,6 +338,9 @@ dpdata:     .byte   2
 .org 0x17e80
 .else
 .org KERNEL_START
+.endif
+.ifdef USBCON
+#include  "usbcdc.asm" 
 .endif
 ;***********************************************************
 CMP:
@@ -507,6 +378,7 @@ WARMLIT:
         .dw      0                     ; source
         .dw      0                     ; TOIN
         .dw      up0                   ; Task link
+
 ; M? -- caddr count    current data space string
 ;        dw      L_DOTBASE
 L_MEMQ:
@@ -613,9 +485,9 @@ MSET_L:
 MSET:
         movw    zl, tosl
         poptos
-        ld      t0, z
+        ld      t0, z+
         or      t0, tosl
-        st      z, t0
+        st      -z, t0
         poptos
         ret
         
@@ -628,10 +500,10 @@ MCLR_L:
 MCLR_:
         movw    zl, tosl
         poptos
-        ld      t0, z
+        ld      t0, z+
         com     tosl
         and     t0, tosl
-        st      z, t0
+        st      -z, t0
         poptos
         ret
 
@@ -1169,7 +1041,7 @@ COMMAXT:
 STORECFF1: 
 ;        rcall   CALL_
         rcall   DOLIT
-.ifdef EIND
+.ifdef EIND__
         .dw     0x940F  ; On Atmega 2560 all code is on 128 - 256 Kword area.
 .else
         .dw     0x940E  ; call jmp:0x940d
@@ -1411,6 +1283,8 @@ TYPE2:
 
 
 ; (S"    -- c-addr u      run-time code for S"
+        fdw     TYPE_L
+XSQUOTE_L:
         .db      NFA|3,"(s",0x22
 XSQUOTE:
         m_pop_zh
@@ -1433,7 +1307,7 @@ XSQUOTE:
         ror     zl
         mijmp
 
-        fdw     TYPE_L
+        fdw     XSQUOTE_L
 SQUOTE_L:
         .db      NFA|IMMED|COMPILE|2,"s",0x22,0
 SQUOTE:
@@ -1775,8 +1649,14 @@ EQUAL:
 LESS_L:
         .db     NFA|1,"<"
 LESS:
-        rcall   MINUS
-        jmp     ZEROLESS
+        rcall   MINUS       ; Status flags are valid after MINUS
+        ldi     tosl, 0xff
+        ldi     tosh, 0xff
+        brlt    LESS_1
+        com     tosl
+        com     tosh
+LESS_1:
+        ret
 
         fdw     LESS_L
 GREATER_L:
@@ -2480,19 +2360,21 @@ DIGITQ_L:
         .db     NFA|6,"digit?",0
 DIGITQ:
                                 ; 1 = 0x31    a = 0x61
-        cpi     tosl, 0x40
+        cpi     tosl, 0x3a
         brlt    DIGITQ1
+        cpi     tosl, 0x61
+        brmi    DIGITQ2
         sbiw    tosl, 0x27
 DIGITQ1:        
         sbiw    tosl, 0x30      ; 1
-        brpl    DIGITQ2
-        rjmp    FALSE_
+        brpl    DIGITQ3
 DIGITQ2:
+        rjmp    FALSE_
+DIGITQ3:
         rcall   DUP             ; 1 1
         rcall   BASE            ; 1 1 base
         rcall   FETCH_A         ; 1 1 10
         jmp     LESS            ; 1 ffff
-
 
 ; SIGN?   adr n -- adr' n' f   get optional sign
 ; + leaves $0000 flag
@@ -2953,12 +2835,12 @@ DP_TO_EEPROM:
         rcall   STORE_P_TO_R
         rcall   INI
         rcall   DOLIT
-        .dw     4
+        .dw     9
         rcall   TOR
 DP_TO_EEPROM_0: 
-        rcall   FETCHPP
+        rcall   CFETCHPP
         rcall   DUP
-        rcall   PFETCH
+        rcall   PCFETCH
         rcall   NOTEQUAL
         rcall   ZEROSENSE
         breq    DP_TO_EEPROM_1
@@ -2967,12 +2849,12 @@ DP_TO_EEPROM_0:
         .dw     'E'
         call    EMIT
 .endif
-        rcall   PSTORE
+        rcall   PCSTORE
         rjmp    DP_TO_EEPROM_2
 DP_TO_EEPROM_1:
         rcall   DROP
 DP_TO_EEPROM_2:
-        rcall   PTWOPLUS
+        rcall   PPLUS
 DP_TO_EEPROM_3:
         rcall   XNEXT
         brcc    DP_TO_EEPROM_0
@@ -3373,7 +3255,7 @@ SEMICOLON:
         breq    RCALL_TO_JMP
         poptos
         rcall   MINUS_FETCH
-.ifdef EIND
+.ifdef EIND__
         subi    tosl, 0x0f
 .else
         subi    tosl, 0x0e
@@ -3381,7 +3263,7 @@ SEMICOLON:
         sbci    tosh, 0x94
         brne    ADD_RETURN
 CALL_TO_JMP:
-.ifdef EIND
+.ifdef EIND__
         ldi     tosl, 0x0d
 .else
         ldi     tosl, 0x0c
@@ -3401,7 +3283,7 @@ RCALL_TO_JMP:
         .dw     -2
         rcall   IALLOT
         rcall   DOLIT
-.ifdef EIND
+.ifdef EIND__
         .dw     0x940d
 .else
         .dw     0x940c      ; jmp:0x940c
@@ -3504,16 +3386,11 @@ TICKS_L:
         .db     NFA|5,"ticks"
 TICKS:  
         pushtos
-        in_     t0, SREG
-        cli
-        mov     tosl, ms_count
-        mov     tosh, ms_count1
-        out_    SREG, t0
+        movw     tosl, ms_count
         ret
 
-        
 ; ms  +n --      Pause for n millisconds
-; : ms ( +n -- )     
+; : ms ( +n -- )
 ;   ticks -
 ;   begin
 ;     pause dup ticks - 0<
@@ -3525,14 +3402,15 @@ MS_L:
 MS:
         rcall   TICKS
         rcall   PLUS
+        rcall   ONEMINUS
 MS1:    
         rcall   PAUSE
-        rcall   DUP
-        rcall   TICKS
-        rcall   MINUS
-        rcall   ZEROLESS
-        rcall   ZEROSENSE
-        breq    MS1
+        movw    t0, tosl
+        cli
+        sub     t0, ms_count      ; tos mscount -
+        sbc     t1, ms_count1
+        sei
+        brpl    MS1
         jmp     DROP
 
 ;  .id ( nfa -- ) 
@@ -3739,7 +3617,7 @@ X_TO_R:
         adiw    zl, 1
         st      -z, tosl
         st      -z, tosh
-.ifdef EIND
+.ifdef EIND__
         st      -z, r_one
 .endif
         st      -z, r_zero
@@ -4008,7 +3886,7 @@ LEAVE:
 ; RDROP compile a pop
         fdw      LEAVE_L
 RDROP_L:
-        .db      NFA|IMMED|COMPILE|INLINE|5,"rdrop"
+        .db      NFA|COMPILE|INLINE|5,"rdrop"
 RDROP:
         pop     t0
         pop     t0
@@ -4155,7 +4033,15 @@ DLESS_L:
         .db     NFA|2,"d<",0
 DLESS:
         rcall   DMINUS
-        jmp     DZEROLESS
+        ld      tosl, y+
+        ld      tosh, y+
+        ldi     tosl, 0xff
+        ldi     tosh, 0xff
+        brlt    DLESS_1
+        com     tosl
+        com     tosh
+DLESS_1:
+        ret
 ;***************************************************
         fdw     DLESS_L
 DGREATER_L:
@@ -4325,7 +4211,7 @@ LOAD_L:
 .endif
 .endif
 
-.ifdef UCSR1A
+.if UARTS == 2
 ;***************************************************
 ; TX1   c --    output character to UART 1
         fdw     RX0Q_L
@@ -4427,16 +4313,17 @@ RX1_ISRR:
 .endif
 .endif
         lds     xl, rbuf1_lv
-        cpi     xl, RX1_BUF_SIZE-2
-        breq    RX1_OVF
         inc     xl
         sts     rbuf1_lv, xl
+
+.if U1FC_TYPE == 1
         cpi     xl, RX0_OFF_FILL
         brmi    RX1_ISR_SKIP_XOFF
-.if U1FC_TYPE == 1
         rcall   XXOFF_TX1_1
 .endif
 .if U1FC_TYPE == 2
+        cpi     xl, RX0_OFF_FILL
+        brmi    RX1_ISR_SKIP_XOFF
         sbi_    U1RTS_PORT, U1RTS_BIT
 .endif
 RX1_ISR_SKIP_XOFF:
@@ -4449,10 +4336,6 @@ RX1_ISR_SKIP_XOFF:
         inc     xl
         andi    xl, (RX1_BUF_SIZE-1)
         sts     rbuf1_wr, xl
-        rjmp    FF_ISR_EXIT
-RX1_OVF:
-        ldi     zh, '|'
-        rcall   TX1_SEND
         rjmp    FF_ISR_EXIT
 TX1_ISR:
 .endif
@@ -4823,9 +4706,10 @@ FF_ISR_EXIT:
         pop     t0
         pop     zh
         pop     zl
-MS_TIMER_ISR_EXIT:
+MS_TIMER_ISR_EXIT_LOAD:
         ld      xl, y+
         ld      xh, y+
+MS_TIMER_ISR_EXIT:
         out_    SREG, xh
         ld      xh, y+
         reti
@@ -4849,12 +4733,8 @@ FF_ISR:
         push    t1
         push    tosl
         push    tosh
-.if low(ivec) == 0x80
-        ldi     xh, low(ivec-1)
-        add     xl, xh
-.else
-        subi    xl, 1
-.endif
+        ldi     t0, low(ivec-1)
+        add     xl, t0
         ldi     xh, high(ivec)
         ld      zl, x+
         ld      zh, x+
@@ -4869,12 +4749,12 @@ MS_TIMER_ISR:
 .endif
         st      -y, xh
         in_     xh, SREG
-        st      -y, xh
-        st      -y, xl
         add     ms_count,  r_one
         adc     ms_count1, r_zero
 .if CPU_LOAD == 1
 LOAD_ADD:
+        st      -y, xh
+        st      -y, xl
         in_     xl, TCNT1L
         in_     xh, TCNT1H
         out_    TCNT1H, r_zero
@@ -4888,8 +4768,10 @@ LOAD_ADD:
         brne    LOAD_ADD_END
         sbr     FLAGS2, (1<<fLOAD)
 LOAD_ADD_END:
-.endif
+        rjmp    MS_TIMER_ISR_EXIT_LOAD
+.else
         rjmp    MS_TIMER_ISR_EXIT
+.endif
 ;;; ***************************************************
 RX0_ISR:
         in_     xh, UDR0_
@@ -4901,21 +4783,20 @@ RX0_ISR:
 .endif
 .endif
         lds     xl, rbuf0_lv
-        cpi     xl, RX0_BUF_SIZE-2
-        breq    RX0_OVF
         inc     xl
         sts     rbuf0_lv, xl
 
+.if U0FC_TYPE == 1
         cpi     xl, RX0_OFF_FILL
         brmi    RX0_ISR_SKIP_XOFF
-.if U0FC_TYPE == 1
         rcall   XXOFF_TX0_1
 .endif
 .if U0FC_TYPE == 2
+        cpi     xl, RX0_OFF_FILL
+        brmi    RX0_ISR_SKIP_XOFF
         sbi_    U0RTS_PORT, U0RTS_BIT
 .endif
 RX0_ISR_SKIP_XOFF:
-
         ldi     zl, low(rbuf0)
         ldi     zh, high(rbuf0)
 
@@ -4927,13 +4808,8 @@ RX0_ISR_SKIP_XOFF:
         andi    xl, (RX0_BUF_SIZE-1)
         sts     rbuf0_wr, xl
         rjmp    FF_ISR_EXIT
-RX0_OVF:
-        ldi     zh, '|'
-        rcall   TX0_SEND
-        rjmp    FF_ISR_EXIT
-TX0_ISR:
 
-.ifdef UCSR1A
+.if UARTS == 2
 RX1_ISR: rjmp   RX1_ISRR
 .endif
 ;***************************************************
@@ -5061,17 +4937,17 @@ RX0Q:
 ;   ibasehi = iaddrhi
 ;endif
 IUPDATEBUF:
-	sub_pflash_tos
+	      sub_pflash_tos
 .ifdef  RAMPZ
-	ldi     t0, RAMPZV
+	      ldi     t0, RAMPZV
 .endif
 XUPDATEBUF:
         sts     iaddrl, tosl
         sts     iaddrh, tosh
 .ifdef RAMPZ
         sts     iaddru, t0
-	cpi     t0, RAMPZV
-	brne    XUPDATEBUF2
+        cpi     t0, RAMPZV
+        brne    XUPDATEBUF2
 .endif
         cpi     tosh, high(FLASH_HI-PFLASH+1) ; Dont allow kernel writes
         brcc    ISTORERR
@@ -5141,9 +5017,13 @@ IWRITE_BUFFER:
         rcall   DOLIT
         .dw     10
         rcall   MS
+
         ; Disable interrupts
         cli
         movw    zl, ibasel
+        cpi     zh, high(FLASH_HI-PFLASH+1) ; Don't allow kernel writes
+        brcc    ISTORERR2
+
 .ifdef RAMPZ
 	lds     t0, ibaseu
 	out_    RAMPZ, t0
@@ -5189,6 +5069,7 @@ IWRITE_BUFFER2:
         brne    IWRITE_BUFFER2
         pop     r1
         pop     r0
+ISTORERR2:
 	ser     t0
 	mov     ibaseh, t0
 .ifdef RAMPZ
@@ -5297,7 +5178,7 @@ IFLUSH:
         ret
 
 ;***************************************************
-.ifdef UCSR1A
+.if UARTS == 2
         fdw     RX1Q_L
 .else
         fdw     RX0Q_L
@@ -5322,7 +5203,11 @@ INIT_012:
         movw    r_one, zl
         ret
 ;*******************************************************
+.ifdef USBCON
+        fdw     TXU_L
+.else
         fdw     EMPTY_L
+.endif
 WARM_L:
         .db     NFA|4,"warm",0
 WARM_:
@@ -5346,14 +5231,24 @@ WARM_1:
         in_     t2, MCUSR
         sts     MCUSR, r_zero
 .endif
-        ldi     xl, 0x1C  ; clear ram from y register upwards
+        ldi     xh, high(SRAM_START)
+
+.ifdef USBCON
+  	    sbi_	USBCON, OTGPADE			; Enable USB power pads
+        ldi   xl, low(SRAM_START + 0x10)
+.else
+        ldi   xl, low(SRAM_START)
+.endif
 WARM_2:
         st      x+, r_zero
-        cpi     xh, 0x10  ; up to 0xfff, 4 Kbytes 
+        cpi     xh, high(RAMEND) 
         brne    WARM_2
+        cpi     xl, low(RAMEND)
+        brne    WARM_2
+        st      x, r_zero
 
 ; Init empty flash buffer
-	    dec     ibaseh
+	dec     ibaseh
 .ifdef RAMPZ
 	sts     ibaseu, ibaseh
 .endif
@@ -5380,7 +5275,7 @@ WARM_2:
         ldi     t0, RAMPZV
         out_    RAMPZ, t0
 .endif
-.ifdef EIND
+.ifdef EIND__
         out_    EIND, r_one
 .endif
 ; init warm literals
@@ -5460,7 +5355,7 @@ WARM_3:
 .endif
 
 ; Init UART 0
-.ifdef UBRR0L
+.if UARTS >= 1
         rcall   DOLIT
         .dw     RX0_ISR
         rcall   DOLIT
@@ -5488,7 +5383,7 @@ WARM_3:
 .endif
 .endif
 ; Init UART 1
-.ifdef UBRR1L
+.if UARTS == 2
         rcall   DOLIT
         .dw     RX1_ISR
         rcall   DOLIT
@@ -5512,16 +5407,22 @@ WARM_3:
 .endif
 .endif
         rcall   DP_TO_RAM
-        sei
-
-        rcall   RQ_EMIT
-        rcall   VER
+.ifdef USBCON
+.if OPERATOR_UART == 3
+		    call	USB_ON
+.endif
+.endif
         sts     rbuf0_lv, r_zero
         sts     rbuf0_wr, r_zero
 .ifdef rbuf1_lv
         sts     rbuf1_lv, r_zero
         sts     rbuf1_wr, r_zero
 .endif
+        sei
+
+        rcall   RQ_EMIT
+        rcall   VER
+
 .if CPU_LOAD_LED == 1
         sbi_    CPU_LOAD_DDR, CPU_LOAD_BIT
 .endif
@@ -5583,7 +5484,7 @@ IRQ_SEMI_L:
         .db     NFA|IMMED|2,";i",0
 IRQ_SEMI:
         rcall   DOLIT
-.ifdef EIND
+.ifdef EIND__
         .dw     0x940D     ; jmp
 .else
         .dw     0x940C     ; jmp
@@ -5603,10 +5504,8 @@ IRQ_V:
         movw    zl, tosl
         sbiw    zl, 1
         lsl     zl
-.if low(ivec) == 0x80
-        ldi     zh, low(ivec)
-        add     zl,  zh
-.endif
+        ldi     tosl, low(ivec)
+        add     zl, tosl
         ldi     zh, high(ivec)
         poptos
         rcall   TO_XA
@@ -5856,8 +5755,6 @@ FUNLOCK_L:
         cbr     FLAGS1, (1<<fLOCK)
         ret
 
-
-
         fdw     FUNLOCK_L
 VALUE_L:
         .db     NFA|5,"value"
@@ -5922,11 +5819,13 @@ TURNKEY:
 PAUSE_L:
         .db     NFA|5,"pause"
 PAUSE:
+.ifdef USBCON
+        call    USB_device_service
+        call    USB_ep_service
+.endif
 .if IDLE_MODE == 1
         rcall   IDLE_LOAD
 .endif
-        in_     t1, SREG
-        cli
         wdr               ; watchdog reset
         push    yh        ; SP
         push    yl
@@ -5935,6 +5834,7 @@ PAUSE:
         push    ph        ; P
         push    pl
         movw    zl, upl
+        cli
         in      t0, sph
         st      -z, t0
         in      t0, spl
@@ -5952,7 +5852,7 @@ PAUSE:
         pop     tosh
         pop     yl
         pop     yh
-        out_    SREG, t1
+        sei
         ret
 
 

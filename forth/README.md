@@ -4,6 +4,11 @@ see git@github.com:oh2aun/flashforth.git
 
 # flash chip:
 
+```
+avrdude -p m328p -c stk500 -P /dev/ttyACM1 -e -u -U flash:w:328-16MHz-38400.hex:i -U efuse:w:0xff:m -U hfuse:w:0xdf:m -U lfuse:w:0xff:m
+```
+
+
 Using USBasp
 
 ```

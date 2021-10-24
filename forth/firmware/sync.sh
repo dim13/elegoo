@@ -5,3 +5,4 @@ curl -O https://raw.githubusercontent.com/oh2aun/flashforth/master/avr/src/ff-at
 curl -O https://raw.githubusercontent.com/oh2aun/flashforth/master/avr/src/config.inc
 curl -O https://raw.githubusercontent.com/oh2aun/flashforth/master/avr/src/macros.inc
 curl -O https://raw.githubusercontent.com/oh2aun/flashforth/master/avr/src/usbcdc.asm
+curl -O https://raw.githubusercontent.com/oh2aun/flashforth/master/wordsAll.txt

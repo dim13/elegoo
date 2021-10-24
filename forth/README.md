@@ -5,7 +5,7 @@ see git@github.com:oh2aun/flashforth.git
 # flash chip:
 
 ```
-avrdude -p m328p -c stk500 -P /dev/ttyACM1 -e -u -U flash:w:328-16MHz-38400.hex:i -U efuse:w:0xff:m -U hfuse:w:0xdf:m -U lfuse:w:0xff:m
+avrdude -p m328p -c usbasp -e -u -U flash:w:328-16MHz-38400.hex:i -U efuse:w:0xff:m -U hfuse:w:0xdf:m -U lfuse:w:0xff:m
 ```
 
 
@@ -16,7 +16,7 @@ Using USBasp
        -C/Applications/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf \
        -v -p m328p -c usbasp -e -u \
        -Uflash:w:firmware/328-16MHz-38400.hex:i \
-       -Uefuse:w:0x07:m -Uhfuse:w:0xda:m -Ulfuse:w:0xff:m
+       -Uefuse:w:0xff:m -Uhfuse:w:0xda:m -Ulfuse:w:0xff:m
 ```
 
 Using AVR as ISP

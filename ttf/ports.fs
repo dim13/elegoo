@@ -34,7 +34,7 @@ $002b constant portd
 
 : read ( -- c )
   %11111100 ddrd mclr
-  %00000011 ddrb  mclr ;
+  %00000011 ddrb mclr
   rdx strobe
   pind c@ %11111100 and
   pinb c@ %00000011 and or
@@ -48,3 +48,5 @@ $002b constant portd
   #8 rshift byte! \ hi
   $ff and byte!   \ lo
 ;
+
+: id ( -- x x x x ) $04 cmd! byte@ byte@ byte@ byte@ ;

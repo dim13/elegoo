@@ -12,24 +12,24 @@ marker -main
   wrx mset
   csx mclr
 
-  $cb cmd! $39 byte! $2c byte! $00 byte! $34 byte! $02 byte!
-  $cf cmd! $00 byte! $c1 byte! $30 byte!
-  $e8 cmd! $85 byte! $00 byte! $78 byte!
-  $ea cmd! $00 byte! $00 byte!
-  $ed cmd! $64 byte! $03 byte! $12 byte! $81 byte!
-  $f7 cmd! $20 byte!
-  $c0 cmd! $23 byte!		\ power control
-  $c1 cmd! $10 byte!		\ power control
-  $c5 cmd! $3e byte! $28 byte!	\ vcm control
-  $c7 cmd! $86 byte!		\ vcm control2
-  $36 cmd! $48 byte!		\ memory access control
-  $3a cmd! $55 byte!
-  $b1 cmd! $00 byte! $18 byte!
-  $b6 cmd! $08 byte! $82 byte! $27 byte! \ display control function
-  $11 cmd! \ exit sleep
+  $cb cmd! $39 byte! $2c byte! $00 byte! $34 byte! $02 byte!	\ Power control A
+  $cf cmd! $00 byte! $c1 byte! $30 byte!			\ Power control B
+  $e8 cmd! $85 byte! $00 byte! $78 byte!			\ Driver timing control A
+  $ea cmd! $00 byte! $00 byte!					\ Driver timing control B
+  $ed cmd! $64 byte! $03 byte! $12 byte! $81 byte!		\ Power on sequence control
+  $f7 cmd! $20 byte!						\ Pump ratio control
+  $c0 cmd! $23 byte!						\ Power Control 1
+  $c1 cmd! $10 byte!						\ Power Control 2
+  $c5 cmd! $3e byte! $28 byte!					\ VCOM Control 1
+  $c7 cmd! $86 byte!						\ VCOM Control 2
+  $36 cmd! $48 byte!						\ Memory Access Control
+  $3a cmd! $55 byte!						\ COLMOD: Pixel Format Set
+  $b1 cmd! $00 byte! $18 byte!					\ Frame Rate Control
+  $b6 cmd! $08 byte! $82 byte! $27 byte!			\ Display Function Control
+  $11 cmd!							\ Sleep Out
   120 ms
-  $29 cmd! \ display on
-  $2c cmd!
+  $29 cmd!							\ Display ON
+  $2c cmd!							\ Memory Write
 ;
 
 : width  ( from to -- len ) $2a cmd! word! word! ;
@@ -45,11 +45,9 @@ marker -main
 
 : main
   init
-  begin
-    320 for
-      240 for
-        rnd word!
-      next
+  320 for
+    240 for
+      rnd $7fff u> word!
     next
-  key? until
+  next
 ;

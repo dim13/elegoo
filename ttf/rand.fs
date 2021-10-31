@@ -9,6 +9,6 @@ marker -rand
   dup #8 lshift xor
 ;
 
-ticks value (rnd)
+variable (rnd)
 
-: rnd ( -- n ) (rnd) xorshift dup is (rnd) ;
+: rnd ( -- n ) (rnd) @ xorshift dup (rnd) ! ;

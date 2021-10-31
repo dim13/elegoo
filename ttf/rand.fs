@@ -11,4 +11,5 @@ marker -rand
 
 variable (rnd)
 
-: rnd ( -- n ) (rnd) @ xorshift dup (rnd) ! ;
+: seed ( n -- ) (rnd) ! ;
+: rnd  ( -- n ) (rnd) @ xorshift dup (rnd) ! ;

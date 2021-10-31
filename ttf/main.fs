@@ -45,7 +45,7 @@ marker -main
 
 : main
   init
-  ticks is (rnd)
+  ticks seed
   320 for
     240 for
       rnd $7fff u> word!

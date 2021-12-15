@@ -1,0 +1,2 @@
+uno:\
+	:br#38400:dv=/dev/cu.usbmodem1101:

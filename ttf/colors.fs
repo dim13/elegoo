@@ -7,11 +7,19 @@ marker -colors
   %11111000 and 8 lshift or      \ red
 ;
 
-$00 $00 $00 rgb565 constant black   \ 0
-$ff $00 $00 rgb565 constant red     \ 1
-$00 $ff $00 rgb565 constant green   \ 2
-$ff $ff $00 rgb565 constant yellow  \ 3
-$00 $00 $ff rgb565 constant blue    \ 4
-$ff $00 $ff rgb565 constant magenta \ 5
-$00 $ff $ff rgb565 constant cyan    \ 6
-$ff $ff $ff rgb565 constant white   \ 7
+$00 $00 $00 rgb565 constant black
+$80 $00 $00 rgb565 constant maroon
+$00 $80 $00 rgb565 constant green
+$80 $80 $00 rgb565 constant olive
+$00 $00 $80 rgb565 constant navy
+$80 $00 $80 rgb565 constant purple
+$00 $80 $80 rgb565 constant teal
+$c0 $c0 $c0 rgb565 constant silver
+$80 $80 $80 rgb565 constant gray
+$ff $00 $00 rgb565 constant red
+$00 $ff $00 rgb565 constant lime
+$ff $ff $00 rgb565 constant yellow
+$00 $00 $ff rgb565 constant blue
+$ff $00 $ff rgb565 constant fuchsia
+$00 $ff $ff rgb565 constant aqua
+$ff $ff $ff rgb565 constant white

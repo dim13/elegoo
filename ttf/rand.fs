@@ -3,13 +3,16 @@
 -rand
 marker -rand
 
+variable seed
+
 : xorshift ( n -- n )
   dup #7 lshift xor
   dup #9 rshift xor
   dup #8 lshift xor
 ;
 
-variable (rnd)
-
-: seed ( n -- ) (rnd) ! ;
-: rnd  ( -- n ) (rnd) @ xorshift dup (rnd) ! ;
+: rnd  ( -- n )
+  seed @
+  xorshift
+  dup seed !
+;

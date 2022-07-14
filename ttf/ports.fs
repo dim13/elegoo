@@ -44,7 +44,8 @@ $002b constant portd
 : byte! ( c -- ) d/cx mset send ;
 : byte@ ( -- c ) d/cx mset read ;
 
-: word! ( w -- ) dup
+: word! ( w -- )
+  dup
   #8 rshift byte! \ hi
   $ff and byte!   \ lo
 ;

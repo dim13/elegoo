@@ -16,10 +16,18 @@ marker -main
   ticks seed !
 ;
 
-: fill ( -- )
-  320 for
-    240 for
+: cfill ( -- )
+  2 for
+    38400 for
       rnd $7fff u> word!
+    next
+  next
+;
+
+: xfill ( -- )
+  2 for
+    38400 for
+      r@ word!
     next
   next
 ;

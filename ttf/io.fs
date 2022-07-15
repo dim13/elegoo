@@ -24,6 +24,15 @@ marker -i/o
 
 : command  ( -- ) d/cx mclr ;
 : data     ( -- ) d/cx mset ;
+: data/rd  ( -- )
+  %11111100 ddrd mclr
+  %00000011 ddrb mclr
+;
+: data/wr  ( -- )
+  %11111100 ddrd   mset
+  %00000011 ddrb   mset
+;
+
 
 : cmd!  ( c -- ) command wr ;
 : byte! ( c -- ) data    wr ;

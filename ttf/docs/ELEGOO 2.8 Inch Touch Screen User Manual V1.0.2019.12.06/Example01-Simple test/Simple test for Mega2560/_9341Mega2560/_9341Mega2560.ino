@@ -79,8 +79,8 @@ void Lcd_Init(void)
 
     Lcd_Write_Com(0xCF);  
     Lcd_Write_Data(0x00); 
-    Lcd_Write_Data(0XC1); 
-    Lcd_Write_Data(0X30); 
+    Lcd_Write_Data(0xC1); 
+    Lcd_Write_Data(0x30); 
 
     Lcd_Write_Com(0xE8);  
     Lcd_Write_Data(0x85); 
@@ -94,8 +94,8 @@ void Lcd_Init(void)
     Lcd_Write_Com(0xED);  
     Lcd_Write_Data(0x64); 
     Lcd_Write_Data(0x03); 
-    Lcd_Write_Data(0X12); 
-    Lcd_Write_Data(0X81); 
+    Lcd_Write_Data(0x12); 
+    Lcd_Write_Data(0x81); 
 
     Lcd_Write_Com(0xF7);  
     Lcd_Write_Data(0x20); 

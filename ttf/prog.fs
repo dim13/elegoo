@@ -1,5 +1,5 @@
--main
-marker -main
+-prog
+marker -prog
 
 : width  ( from to -- ) $2a cmd! word! word! ;
 : height ( from to -- ) $2b cmd! word! word! ;
@@ -11,7 +11,7 @@ marker -main
   $2c cmd!
 ;
 
-: main
+: prog
   init
   ticks seed !
 ;

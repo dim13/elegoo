@@ -36,16 +36,3 @@ marker -i/o
 ;
 
 \ : id ( -- x x x x ) $04 cmd! byte@ byte@ byte@ byte@ ;
-
-
-: cmd!  ( c -- ) command wr ;
-: byte! ( c -- ) data    wr ;
-: byte@ ( -- c ) data    rd ;
-
-: word! ( w -- )
-  dup
-  #8 rshift byte! \ hi
-  $ff and byte!   \ lo
-;
-
-\ : id ( -- x x x x ) $04 cmd! byte@ byte@ byte@ byte@ ;

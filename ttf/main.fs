@@ -102,20 +102,20 @@ $2b constant portd
   wrx  mset
   csx  mclr
 
-  $cb reg! $39 wr $2c wr $00 wr $34 wr $02 wr	\ Power control A
-  $cf reg! $00 wr $c1 wr $30 wr			\ Power control B
-  $e8 reg! $85 wr $00 wr $78 wr			\ Driver timing control A
-  $ea reg! $00 wr $00 wr			\ Driver timing control B
-  $ed reg! $64 wr $03 wr $12 wr $81 wr		\ Power on sequence control
-  $f7 reg! $20 wr				\ Pump ratio control
-  $c0 reg! $23 wr				\ Power Control 1
-  $c1 reg! $10 wr				\ Power Control 2
-  $c5 reg! $3e wr $28 wr			\ VCOM Control 1
-  $c7 reg! $86 wr				\ VCOM Control 2
-  $36 reg! $48 wr				\ Memory Access Control
-  $3a reg! $55 wr				\ COLMOD: Pixel Format Set
-  $b1 reg! $00 wr $18 wr			\ Frame Rate Control
-  $b6 reg! $08 wr $82 wr $27 wr			\ Display Function Control
+  $cb reg! $39 wr $2c wr $00 wr $34 wr $02 wr	\ Power control A		39 2c 00 43 02
+  $cf reg! $00 wr $c1 wr $30 wr			\ Power control B		00 81 30
+  $e8 reg! $85 wr $00 wr $78 wr			\ Driver timing control A	84 11 7a
+  $ea reg! $00 wr $00 wr			\ Driver timing control B	66 00
+  $ed reg! $64 wr $03 wr $12 wr $81 wr		\ Power on sequence control	55 01 23 1
+  $f7 reg! $20 wr				\ Pump ratio control		10
+  $c0 reg! $23 wr				\ Power Control 1		21
+  $c1 reg! $10 wr				\ Power Control 2		10
+  $c5 reg! $3e wr $28 wr			\ VCOM Control 1		31 3c
+  $c7 reg! $86 wr				\ VCOM Control 2		c0
+  $36 reg! $48 wr				\ Memory Access Control		00
+  $3a reg! $55 wr				\ COLMOD: Pixel Format Set	66
+  $b1 reg! $00 wr $18 wr			\ Frame Rate Control		00 1b
+  $b6 reg! $08 wr $82 wr $27 wr			\ Display Function Control	0a 82 27 xx
   $11 reg!					\ Sleep Out
   #120 ms
   $29 reg!					\ Display On
